@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>MU5A – Yakında · Demnächst · Coming soon</title>
+<meta name="description" content="Yazılışı MU5A, okunuşu Musa. Sayfa yapım aşamasında – MUSA oyununu şimdi oyna.">
+<meta name="theme-color" content="#0E0E0E">
+<meta property="og:title" content="MU5A – Yakında">
+<meta property="og:description" content="Yazılışı MU5A, okunuşu Musa.">
+<style>
+@font-face{font-family:Anton;font-weight:400;font-display:swap;src:url(anton-latin-400-normal.woff2) format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:Anton;font-weight:400;font-display:swap;src:url(anton-latin-ext-400-normal.woff2) format("woff2");unicode-range:U+0100-02AF,U+0304,U+0308,U+0329,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+@font-face{font-family:Inter;font-weight:500;font-display:swap;src:url(inter-latin-500-normal.woff2) format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:Inter;font-weight:500;font-display:swap;src:url(inter-latin-ext-500-normal.woff2) format("woff2");unicode-range:U+0100-02AF,U+0304,U+0308,U+0329,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+:root{--bg:#0E0E0E;--accent:#FFB400;--fg:#FFFFFF;--muted:#BDBDBD}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:var(--bg);color:var(--fg);font-family:Inter,system-ui,sans-serif;font-weight:500}
+body{min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 20px;text-align:center}
+.stripe{position:fixed;left:0;right:0;height:10px;background:repeating-linear-gradient(-45deg,var(--accent) 0 18px,var(--bg) 18px 36px)}
+.stripe.top{top:0}.stripe.bottom{bottom:0}
+.soon{font-family:Anton,Impact,sans-serif;letter-spacing:6px;font-size:clamp(16px,3.2vw,24px);color:var(--accent);margin:0 0 8px}
+.logo{font-family:Anton,Impact,sans-serif;font-size:clamp(110px,30vw,260px);line-height:1;letter-spacing:4px;margin:0;display:flex;justify-content:center}
+.logo .five{color:var(--accent)}
+.bar{width:min(420px,70vw);height:6px;border-radius:3px;background:var(--accent);margin:22px auto 24px}
+.slogan{font-family:Anton,Impact,sans-serif;font-size:clamp(26px,6vw,48px);line-height:1.08;letter-spacing:1px;margin:0}
+.slogan span{color:var(--accent)}
+.status{margin:22px 0 34px;font-size:clamp(12px,2.6vw,15px);letter-spacing:4px;color:var(--muted);text-transform:uppercase;line-height:2}
+.status b{color:var(--fg);font-weight:500}
+.play{display:inline-flex;align-items:center;gap:14px;background:var(--accent);color:#0E0E0E;text-decoration:none;font-family:Anton,Impact,sans-serif;font-size:clamp(22px,5vw,30px);letter-spacing:2px;padding:16px 38px;border-radius:14px;box-shadow:0 0 0 0 rgba(255,180,0,.6);animation:pulse 2.2s infinite;transition:transform .15s}
+.play:hover,.play:focus-visible{transform:scale(1.05)}
+.play svg{width:26px;height:26px}
+.sub{margin-top:12px;font-size:13px;letter-spacing:3px;color:var(--muted)}
+footer{margin-top:44px;font-size:12px;letter-spacing:3px;color:#777}
+footer a{color:#999;text-decoration:none}
+footer a:hover{color:var(--accent)}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(255,180,0,.55)}70%{box-shadow:0 0 0 18px rgba(255,180,0,0)}100%{box-shadow:0 0 0 0 rgba(255,180,0,0)}}
+@media (prefers-reduced-motion:reduce){.play{animation:none}}
+</style>
+</head>
+<body>
+<div class="stripe top"></div>
+
+<p class="soon">YAKINDA · DEMNÄCHST · COMING SOON</p>
+<h1 class="logo" aria-label="MU5A"><span>MU</span><span class="five">5</span><span>A</span></h1>
+<div class="bar"></div>
+<p class="slogan">YAZILIŞI MU5A,<br>OKUNUŞU <span>MUSA.</span></p>
+
+<p class="status">
+  <b>MU5A.com</b> yapım aşamasında<br>
+  <span lang="de">Seite im Aufbau</span> · <span lang="en">Under construction</span>
+</p>
+
+<a class="play" href="https://xenosmart.de/spiel/musa.html">
+  <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 4.5v15a1 1 0 0 0 1.5.86l12-7.5a1 1 0 0 0 0-1.72l-12-7.5A1 1 0 0 0 7 4.5z"/></svg>
+  OYUNA BAŞLA
+</a>
+<div class="sub">ZUM SPIEL · PLAY THE GAME</div>
+
+<footer>MU5A · ÇAYCUM4 · <a href="https://xenosmart.de/impressum.html">Impressum</a></footer>
+
+<div class="stripe bottom"></div>
+</body>
+</html>
