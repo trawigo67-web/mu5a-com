@@ -36,9 +36,12 @@ footer a{color:#999;text-decoration:none}
 footer a:hover{color:var(--accent)}
 @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(255,180,0,.55)}70%{box-shadow:0 0 0 18px rgba(255,180,0,0)}100%{box-shadow:0 0 0 0 rgba(255,180,0,0)}}
 @media (prefers-reduced-motion:reduce){.play{animation:none}}
+.member{position:fixed;top:20px;right:20px;z-index:10;font-family:Inter,system-ui,sans-serif;font-weight:500;font-size:14px;letter-spacing:1px;color:var(--fg);text-decoration:none;border:1.5px solid var(--accent);border-radius:999px;padding:8px 16px;background:var(--bg)}
+.member:hover,.member:focus-visible{background:var(--accent);color:var(--bg)}
 </style>
 </head>
 <body>
+<a class="member" href="https://mu5a-ekip.pages.dev">Üye girişi</a>
 <div class="stripe top"></div>
 
 <p class="soon">YAKINDA · DEMNÄCHST · COMING SOON</p>
