@@ -1,0 +1,1475 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f0f5f1" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#06120c" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Namazım">
+<meta name="description" content="Adım adım namaz rehberi, dualar, zamm-ı sureler ve tesbihat sayacı.">
+<title>Namazım</title>
+<link rel="stylesheet" href="fonts.css">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="format-detection" content="telephone=no">
+<style>
+:root{
+  /* Layout: tek sütunlu telefon uygulaması — üstte başlık, ortada kayan içerik, altta sekmeler.
+     Vakitler mihrap kemeri biçiminde kartlar; âyet ve rekât işaretleri sekiz köşeli yıldız. */
+  --bg:#f0f5f1;
+  --surface:#ffffff;
+  --sunk:#e3ede6;
+  --ink:#0f2219;
+  --muted:#506357;
+  --line:#d2e0d6;
+  --accent:#0d7442;
+  --accent-soft:#dcf0e3;
+  --on-accent:#ffffff;
+  --teal:#0b7a57;
+  --teal-soft:#dbf1e6;
+  --gold:#946710;
+  --warn:#ad3f28;
+  --warn-soft:#fbe8e2;
+  --shadow:0 1px 2px rgba(15,34,25,.06),0 8px 22px rgba(15,34,25,.07);
+  --font-display:'Amiri','Iowan Old Style','Palatino Linotype',Georgia,serif;
+  --font-body:'Atkinson Hyperlegible Next',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --font-ar:'Scheherazade New','Amiri','Noto Naskh Arabic','Geeza Pro','Traditional Arabic',serif;
+  --ar:31px;
+  --lat:17px;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#06120c; --surface:#0d1e16; --sunk:#091711; --ink:#e5f2ea; --muted:#99b2a4; --line:#1c3a2b;
+    --accent:#5ad693; --accent-soft:#11311f; --on-accent:#03100a; --teal:#46cba4; --teal-soft:#0e2c22;
+    --gold:#e6bd66; --warn:#ff9a80; --warn-soft:#3a1c17;
+    --shadow:0 1px 2px rgba(0,0,0,.35),0 10px 26px rgba(0,0,0,.28);
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#06120c; --surface:#0d1e16; --sunk:#091711; --ink:#e5f2ea; --muted:#99b2a4; --line:#1c3a2b;
+  --accent:#5ad693; --accent-soft:#11311f; --on-accent:#03100a; --teal:#46cba4; --teal-soft:#0e2c22;
+  --gold:#e6bd66; --warn:#ff9a80; --warn-soft:#3a1c17;
+  --shadow:0 1px 2px rgba(0,0,0,.35),0 10px 26px rgba(0,0,0,.28);
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font-body);font-size:var(--lat);line-height:1.5;-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent;overflow-x:hidden}
+button,select,input{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+h1,h2,h3{text-wrap:balance}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* ---------- shell ---------- */
+#app{max-width:560px;margin:0 auto;min-height:100%;display:flex;flex-direction:column}
+.top{position:sticky;top:0;z-index:5;background:var(--bg);padding:calc(env(safe-area-inset-top) + 10px) 16px 10px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:center;gap:10px;flex:1;min-width:0}
+.brand b{font-family:var(--font-display);font-size:27px;line-height:1;letter-spacing:.2px}
+.brand small{display:block;font-size:12px;color:var(--muted);line-height:1.2;margin-top:2px}
+.logo{width:30px;height:30px;color:var(--teal)}
+.iconbtn{width:42px;height:42px;border-radius:12px;border:1px solid var(--line);background:var(--surface);display:grid;place-items:center;flex:none}
+.iconbtn svg{width:22px;height:22px}
+main{flex:1;padding:18px 16px calc(98px + env(safe-area-inset-bottom))}
+.tabs{position:fixed;left:0;right:0;bottom:0;z-index:6;background:var(--surface);border-top:1px solid var(--line);padding:6px 8px calc(env(safe-area-inset-bottom) + 6px)}
+.tabs-in{max-width:560px;margin:0 auto;display:grid;grid-template-columns:repeat(5,1fr);gap:2px}
+.tab{display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 0 4px;border:0;background:none;color:var(--muted);font-size:12px;font-weight:600;border-radius:12px;min-height:52px}
+.tab svg{width:24px;height:24px}
+.tab[aria-current="page"]{color:var(--accent)}
+.tab[aria-current="page"] .tab-ic{background:var(--accent-soft)}
+.tab-ic{display:grid;place-items:center;width:52px;height:30px;border-radius:999px}
+svg.ic{fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+
+/* ---------- type ---------- */
+.h1{font-family:var(--font-display);font-weight:700;font-size:30px;line-height:1.15;margin:0}
+.h2{font-family:var(--font-display);font-weight:700;font-size:23px;line-height:1.2;margin:0}
+.lead{color:var(--muted);margin:6px 0 0}
+.small{font-size:14px;color:var(--muted)}
+.sec{margin-top:26px}
+.sec-h{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:10px}
+.eyebrow{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--teal)}
+.stack{display:flex;flex-direction:column;gap:10px}
+
+/* ---------- vakit cards (mihrap kemeri) ---------- */
+.vakitler{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px}
+.vakit{position:relative;display:flex;flex-direction:column;align-items:center;gap:6px;border:1px solid var(--line);background:var(--surface);border-radius:999px 999px 18px 18px / 70px 70px 18px 18px;padding:26px 10px 14px;text-align:center;box-shadow:var(--shadow);min-height:150px}
+.vakit::before{content:"";position:absolute;inset:6px;border:1px solid var(--line);border-radius:999px 999px 13px 13px / 64px 64px 13px 13px;pointer-events:none}
+.vakit .vi{width:28px;height:28px;color:var(--gold)}
+.vakit .ad{font-family:var(--font-display);font-weight:700;font-size:26px;line-height:1}
+.rek{display:flex;gap:4px;justify-content:center;flex-wrap:wrap}
+.chip{display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:600;padding:3px 8px;border-radius:999px;background:var(--sunk);color:var(--muted);white-space:nowrap}
+.chip.f{background:var(--accent-soft);color:var(--accent)}
+.chip.v{background:var(--teal-soft);color:var(--teal)}
+.chip.w{background:var(--warn-soft);color:var(--warn)}
+
+/* ---------- generic cards / rows ---------- */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:16px;box-shadow:var(--shadow)}
+.note{display:flex;gap:12px;align-items:flex-start;background:var(--teal-soft);border:1px solid color-mix(in srgb,var(--teal) 25%,transparent);border-radius:16px;padding:12px 14px;font-size:15px}
+.note svg{width:22px;height:22px;flex:none;color:var(--teal);margin-top:1px}
+.note.warn{background:var(--warn-soft);border-color:color-mix(in srgb,var(--warn) 30%,transparent)}
+.note.warn svg{color:var(--warn)}
+.list{background:var(--surface);border:1px solid var(--line);border-radius:18px;overflow:hidden;box-shadow:var(--shadow)}
+.row{display:flex;align-items:center;gap:12px;width:100%;padding:12px 14px;border:0;border-top:1px solid var(--line);background:none;text-align:left}
+.row:first-child{border-top:0}
+.row .t{flex:1;min-width:0}
+.row .t b{display:block;font-weight:700}
+.row .t span{display:block;font-size:13.5px;color:var(--muted);line-height:1.35}
+.row .arp{display:block;font-family:var(--font-ar);font-size:21px;line-height:1.7;direction:rtl;text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--muted);margin-top:2px}
+.row .chev{width:18px;height:18px;color:var(--muted);flex:none}
+.done{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;background:var(--teal);color:#fff;flex:none}
+.done svg{width:14px;height:14px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:50px;padding:0 18px;border-radius:14px;border:1px solid var(--line);background:var(--surface);font-weight:700}
+.btn.pri{background:var(--accent);color:var(--on-accent);border-color:var(--accent)}
+a.btn{text-decoration:none;color:var(--ink)}
+a.btn.pri{color:var(--on-accent)}
+.btn.block{width:100%}
+.btn svg{width:20px;height:20px}
+.btn[disabled]{opacity:.45}
+.progress{height:8px;border-radius:99px;background:var(--sunk);overflow:hidden}
+.progress i{display:block;height:100%;background:var(--teal);border-radius:99px}
+
+/* ---------- 8-point star ---------- */
+.star{--s:30px;position:relative;width:var(--s);height:var(--s);display:inline-grid;place-items:center;flex:none;color:var(--teal)}
+.star::before,.star::after{content:"";position:absolute;inset:4px;border:1.6px solid currentColor;border-radius:1.5px}
+.star::after{transform:rotate(45deg)}
+.star>span{position:relative;z-index:1;font-size:11.5px;font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums}
+.star.fill::before,.star.fill::after{background:currentColor}
+.star.fill>span{color:var(--on-accent)}
+
+/* ---------- text cards ---------- */
+.tcard{background:var(--surface);border:1px solid var(--line);border-radius:24px 24px 16px 16px;box-shadow:var(--shadow);overflow:hidden}
+.tc-h{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:12px 16px 0}
+.tc-h b{font-weight:700;font-size:15px;color:var(--teal);letter-spacing:.02em}
+.tc-h .sp{flex:1}
+.tc-note{padding:0 16px 14px;font-size:14px;color:var(--muted)}
+.tline{position:relative;display:grid;gap:4px;padding:12px 16px 14px;border-top:1px solid var(--line)}
+.tc-h + .tline{border-top:0}
+.tline .lnum{position:absolute;left:10px;top:12px;--s:28px}
+.tline.numbered{padding-left:46px}
+.ar{font-family:var(--font-ar);font-size:var(--ar);line-height:2.05;direction:rtl;text-align:right;color:var(--ink);font-weight:400}
+.ok{font-weight:600;font-size:calc(var(--lat) + 1px);line-height:1.45}
+.tr{color:var(--muted);font-size:calc(var(--lat) - 1.5px);line-height:1.45}
+.hide-ar .ar,.hide-ok .ok,.hide-tr .tr{display:none}
+.tline.hid .ar{display:none}
+.tline.hid .ok{color:var(--muted);font-weight:600;letter-spacing:.04em}
+.tline.hid{cursor:pointer}
+.tline.hid .ok.tap{font-weight:400;font-style:italic;letter-spacing:0}
+.niyet .ok{font-size:calc(var(--lat) + 2px)}
+
+/* ---------- layers ---------- */
+.layer{position:fixed;inset:0;z-index:20;background:var(--bg);display:flex;flex-direction:column;animation:lin .18s ease-out}
+.l-top{flex:none;display:flex;align-items:center;gap:10px;padding:calc(env(safe-area-inset-top) + 8px) 12px 8px;border-bottom:1px solid var(--line);background:var(--bg)}
+.l-top .tt{flex:1;min-width:0;text-align:center}
+.l-top .tt b{display:block;font-family:var(--font-display);font-size:21px;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.l-top .tt span{display:block;font-size:13px;color:var(--muted)}
+.l-body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.l-in{max-width:560px;margin:0 auto;padding:16px 16px 28px}
+.l-foot{flex:none;border-top:1px solid var(--line);background:var(--bg);padding:10px 12px calc(env(safe-area-inset-bottom) + 10px)}
+.l-foot-in{max-width:560px;margin:0 auto;display:grid;grid-template-columns:1fr 2fr;gap:10px}
+.l-foot-in.one{grid-template-columns:1fr}
+.sheet-wrap{position:fixed;inset:0;z-index:30;background:rgba(4,14,9,.5);display:flex;align-items:flex-end;justify-content:center;animation:fade .15s ease-out}
+.sheet{width:100%;max-width:560px;max-height:88%;overflow-y:auto;background:var(--bg);border-radius:22px 22px 0 0;padding:8px 16px calc(env(safe-area-inset-bottom) + 18px);animation:up .2s ease-out}
+.grab{width:42px;height:5px;border-radius:9px;background:var(--line);margin:4px auto 12px}
+@keyframes lin{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes up{from{transform:translateY(30px);opacity:.4}to{transform:none;opacity:1}}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+
+/* ---------- guide ---------- */
+.rtrack{display:flex;justify-content:center;gap:6px;padding:10px 12px 0;max-width:560px;margin:0 auto;width:100%}
+.rtrack .rk{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:11px;color:var(--muted);font-weight:600}
+.rtrack .star{--s:26px;color:var(--line)}
+.rtrack .rk.done .star{color:var(--teal)}
+.rtrack .rk.cur .star{color:var(--gold)}
+.rtrack .rk.cur{color:var(--ink)}
+.gbar{height:3px;background:var(--sunk);margin-top:10px}
+.gbar i{display:block;height:100%;background:var(--gold);transition:width .25s}
+.stephead{display:grid;grid-template-columns:76px 1fr;gap:14px;align-items:start}
+.figbox{width:76px;height:84px;border-radius:38px 38px 12px 12px;padding-top:6px;background:var(--surface);border:1px solid var(--line);display:grid;place-items:center;color:var(--accent)}
+.figbox svg{width:62px;height:62px}
+.phase{font-size:12px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--gold)}
+.steptitle{font-family:var(--font-display);font-weight:700;font-size:27px;line-height:1.15;margin:2px 0 6px}
+.act{margin:0;font-size:calc(var(--lat) - .5px);line-height:1.5}
+.gitems{display:flex;flex-direction:column;gap:12px;margin-top:16px}
+.anim-n{animation:sn .2s ease-out}
+.anim-p{animation:sp .2s ease-out}
+@keyframes sn{from{opacity:0;transform:translateX(18px)}to{opacity:1;transform:none}}
+@keyframes sp{from{opacity:0;transform:translateX(-18px)}to{opacity:1;transform:none}}
+.mini{display:inline-flex;align-items:center;gap:6px;min-height:34px;padding:0 12px;border-radius:999px;border:1px solid var(--line);background:var(--surface);font-size:14px;font-weight:700;color:var(--accent)}
+.mini svg{width:16px;height:16px}
+.endbox{text-align:center;padding:24px 8px 8px}
+.endbox .bigstar{--s:84px;color:var(--teal);margin:0 auto 14px}
+.endbox .bigstar::before,.endbox .bigstar::after{inset:10px;border-width:2.5px}
+
+/* ---------- prep ---------- */
+.field{display:flex;align-items:center;gap:12px;padding:12px 14px}
+.field + .field{border-top:1px solid var(--line)}
+.field label{flex:1;font-weight:600}
+.field label span{display:block;font-weight:400;font-size:13.5px;color:var(--muted)}
+.sel{appearance:none;-webkit-appearance:none;min-height:42px;padding:0 34px 0 12px;border-radius:12px;border:1px solid var(--line);background:var(--surface) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%23889' stroke-width='2'/%3E%3C/svg%3E") no-repeat right 12px center;font-weight:600;max-width:60%}
+.switch{position:relative;width:52px;height:30px;flex:none}
+.switch input{position:absolute;inset:0;opacity:0;margin:0;cursor:pointer}
+.switch i{position:absolute;inset:0;border-radius:99px;background:var(--line);transition:background .15s;pointer-events:none}
+.switch i::after{content:"";position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.3);transition:transform .15s}
+.switch input:checked + i{background:var(--teal)}
+.switch input:checked + i::after{transform:translateX(22px)}
+.switch input:focus-visible + i{outline:3px solid var(--accent);outline-offset:2px}
+.switch input:disabled + i{opacity:.6}
+.verdict{display:flex;gap:8px;align-items:flex-start;font-size:13.5px;line-height:1.4;padding:8px 14px 12px;color:var(--muted)}
+.verdict svg{width:16px;height:16px;flex:none;margin-top:2px}
+.verdict.ok svg{color:var(--teal)}
+.verdict.warn{color:var(--warn)}
+.flow{display:grid;gap:8px}
+.flow .fr{display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:start}
+.flow .fr .star{--s:26px}
+.flow .fr p{margin:3px 0 0;font-size:14.5px;line-height:1.45}
+
+/* ---------- segmented ---------- */
+.seg{display:inline-flex;background:var(--sunk);border-radius:12px;padding:3px;gap:2px}
+.seg button{border:0;background:none;padding:7px 12px;border-radius:9px;font-size:14px;font-weight:700;color:var(--muted);min-height:36px}
+.seg button[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.12)}
+.toggles{display:flex;gap:6px;flex-wrap:wrap}
+.tg{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:6px 12px;font-size:14px;font-weight:700;color:var(--muted);min-height:36px}
+.tg[aria-pressed="true"]{background:var(--accent-soft);border-color:transparent;color:var(--accent)}
+
+/* ---------- tesbih ---------- */
+.tsteps{display:flex;flex-direction:column;gap:8px}
+.ts{border:1px solid var(--line);background:var(--surface);border-radius:16px;overflow:hidden}
+.ts-h{display:flex;align-items:center;gap:12px;width:100%;padding:12px 14px;border:0;background:none;text-align:left}
+.ts-h b{flex:1;font-weight:700}
+.ts-h b span{display:block;font-weight:400;font-size:13px;color:var(--muted)}
+.ts .star{--s:28px}
+.ts.cur{border-color:var(--gold);box-shadow:var(--shadow)}
+.ts.cur .ts-h .star{color:var(--gold)}
+.ts.past .ts-h .star{color:var(--teal)}
+.ts-b{padding:0 14px 14px;display:flex;flex-direction:column;gap:12px}
+.disk{position:relative;width:min(240px,70vw);aspect-ratio:1;margin:4px auto 0;border-radius:50%;border:0;background:var(--surface);box-shadow:var(--shadow),inset 0 0 0 1px var(--line);display:grid;place-items:center;touch-action:manipulation;user-select:none;-webkit-user-select:none}
+.disk svg{position:absolute;inset:0;width:100%;height:100%;transform:rotate(-90deg)}
+.disk circle{fill:none;stroke-width:7}
+.disk .trk{stroke:var(--sunk)}
+.disk .prg{stroke:var(--teal);stroke-linecap:round;transition:stroke-dashoffset .15s}
+.disk .in{display:flex;flex-direction:column;align-items:center;line-height:1}
+.disk .cnt{font-family:var(--font-display);font-weight:700;font-size:64px;font-variant-numeric:tabular-nums}
+.disk .of{font-size:15px;color:var(--muted);margin-top:6px;font-weight:600}
+.zk-ph{text-align:center;display:grid;gap:2px}
+.zk-ph .ar{text-align:center;font-size:calc(var(--ar) * .9);line-height:1.8}
+.disk.pulse{animation:pl .16s ease-out}
+.disk.full .prg{stroke:var(--gold)}
+@keyframes pl{50%{transform:scale(.97)}}
+.zk-row{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+
+/* ---------- info ---------- */
+details.acc{background:var(--surface);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow)}
+details.acc + details.acc{margin-top:10px}
+details.acc summary{list-style:none;display:flex;align-items:center;gap:12px;padding:14px 16px;font-weight:700;cursor:pointer}
+details.acc summary::-webkit-details-marker{display:none}
+details.acc summary .star{--s:26px}
+details.acc summary .sp{flex:1}
+details.acc summary .chev{width:18px;height:18px;color:var(--muted);transition:transform .15s}
+details.acc[open] summary .chev{transform:rotate(90deg)}
+.acc-b{padding:0 16px 16px;font-size:15.5px;line-height:1.55}
+.acc-b p{margin:0 0 10px}
+.acc-b ol,.acc-b ul{margin:0 0 10px;padding-left:22px}
+.acc-b li{margin:4px 0}
+.acc-b li em{font-style:normal;font-weight:700;color:var(--teal);font-size:13px;margin-left:4px}
+.tblwrap{overflow-x:auto}
+table.rt{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums;font-size:15px}
+table.rt th,table.rt td{padding:8px 6px;border-bottom:1px solid var(--line);text-align:center}
+table.rt thead th{font-size:12.5px;color:var(--muted);font-weight:700}
+table.rt tbody th{text-align:left;font-family:var(--font-display);font-size:18px}
+table.rt td.f{color:var(--accent);font-weight:700}
+
+/* ---------- settings ---------- */
+.setgrp{background:var(--surface);border:1px solid var(--line);border-radius:16px;margin-bottom:12px}
+.setgrp .field{flex-wrap:wrap}
+.setgrp h3{margin:0;padding:12px 14px 0;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.fs{display:flex;align-items:center;gap:6px}
+.fs button{width:40px;height:40px;border-radius:12px;border:1px solid var(--line);background:var(--surface);font-weight:700}
+.fs output{min-width:58px;text-align:center;font-size:14px;color:var(--muted);font-weight:600}
+
+/* ---------- ezber ---------- */
+.today{display:grid;gap:12px}
+.today .big{font-family:var(--font-display);font-weight:700;font-size:25px;line-height:1.15}
+.duelist{display:flex;flex-direction:column;gap:8px}
+.st{font-size:12px;font-weight:700;padding:3px 8px;border-radius:999px;white-space:nowrap;flex:none}
+.st.ok{background:var(--accent-soft);color:var(--accent)}
+.st.due{background:color-mix(in srgb,var(--gold) 18%,transparent);color:var(--gold)}
+.st.cal{background:var(--sunk);color:var(--muted)}
+.star.okstar{color:var(--accent)}
+.star.okstar::before,.star.okstar::after{background:currentColor}
+.star.okstar>span{color:var(--on-accent)}
+.gold3{display:flex;gap:8px;flex-wrap:wrap}
+.gold3 button{flex:1;min-width:92px;display:flex;flex-direction:column;align-items:center;gap:2px;padding:10px 6px;border-radius:14px;border:1px solid var(--line);background:var(--surface);font-weight:700}
+.gold3 button span{font-size:12px;font-weight:600;color:var(--muted)}
+.gold3 button.ok{background:var(--accent-soft);border-color:transparent;color:var(--accent)}
+.wk-step{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--gold)}
+.wk-title{font-family:var(--font-display);font-weight:700;font-size:26px;line-height:1.15;margin:2px 0 4px}
+.wk-help{margin:0 0 14px;color:var(--muted);font-size:calc(var(--lat) - 1px)}
+.hintbox{background:var(--surface);border:1px solid var(--line);border-radius:22px 22px 16px 16px;padding:18px 16px;box-shadow:var(--shadow);display:grid;gap:8px}
+.hintbox .hint{font-size:calc(var(--lat) + 5px);font-weight:700;letter-spacing:.05em;line-height:1.5}
+.hintbox .tr{font-size:calc(var(--lat) - .5px)}
+.hintbox .cue{font-size:13px;font-weight:700;color:var(--teal);letter-spacing:.04em;text-transform:uppercase}
+.methods{display:grid;gap:8px;margin:14px 0}
+.methods .fr{display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:start}
+.methods .fr .star{--s:26px}
+.methods .fr p{margin:3px 0 0;font-size:15px;line-height:1.45}
+.answer{min-height:64px;border:2px dashed var(--line);border-radius:16px;padding:10px;display:flex;flex-wrap:wrap;gap:6px;align-content:flex-start;background:var(--sunk)}
+.answer.done{border-style:solid;border-color:var(--accent);background:var(--accent-soft)}
+.wchips{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.wchip{border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:9px 12px;font-weight:700;font-size:calc(var(--lat) + 1px);min-height:44px;box-shadow:0 1px 2px rgba(0,0,0,.06)}
+.wchip.got{background:var(--accent);color:var(--on-accent);border-color:var(--accent);padding:6px 10px;font-size:var(--lat);min-height:0}
+.wchip[disabled]{opacity:.25}
+.wchip.bad{animation:shake .3s}
+@keyframes shake{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+.cnt-btn{font-variant-numeric:tabular-nums}
+.celebrate{text-align:center;padding:20px 6px 6px}
+.celebrate .bigstar{--s:90px;color:var(--accent);margin:0 auto 14px}
+.celebrate .bigstar::before,.celebrate .bigstar::after{inset:10px;border-width:2.5px;background:var(--accent-soft)}
+.toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom) + 96px);transform:translateX(-50%);z-index:40;background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:12px;font-size:14.5px;font-weight:600;box-shadow:var(--shadow);max-width:calc(100% - 32px);animation:fade .15s ease-out}
+
+@media (min-width:600px){ .vakitler{grid-template-columns:repeat(3,1fr)} }
+@media (prefers-reduced-motion: reduce){ *{animation:none !important;transition:none !important} }
+</style>
+</head>
+<body>
+<div id="app">
+  <header class="top">
+    <div class="brand">
+      <svg class="logo ic" viewBox="0 0 32 32" aria-hidden="true"><rect x="7" y="7" width="18" height="18" rx="2"/><rect x="7" y="7" width="18" height="18" rx="2" transform="rotate(45 16 16)"/><circle cx="16" cy="16" r="3.2"/></svg>
+      <div><b>Namazım</b><small>Namaz rehberi · ezber · dualar</small></div>
+    </div>
+    <button class="iconbtn" id="btn-settings" aria-label="Ayarlar"><svg class="ic" viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2.2"/><circle cx="10" cy="17" r="2.2"/></svg></button>
+  </header>
+  <main id="view" tabindex="-1"></main>
+  <nav class="tabs" aria-label="Bölümler"><div class="tabs-in" id="tabs"></div></nav>
+</div>
+<div id="layers"></div>
+<script>window.NAMAZ_DATA = {"surahs":[{"id":"fatiha","no":1,"from":1,"name":"Fâtiha","kind":"sure","ayat":7,"lines":[{"n":1,"ar":"بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ","ok":"Bismillâhir rahmânir rahîm.","tr":"Rahmân ve Rahîm olan Allah'ın adıyla."},{"n":2,"ar":"الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ","ok":"Elhamdü lillâhi rabbil âlemîn.","tr":"Hamd, âlemlerin Rabbi olan Allah'a mahsustur."},{"n":3,"ar":"الرَّحْمَٰنِ الرَّحِيمِ","ok":"Errahmânir rahîm.","tr":"O, Rahmân'dır, Rahîm'dir; merhameti sonsuzdur."},{"n":4,"ar":"مَالِكِ يَوْمِ الدِّينِ","ok":"Mâliki yevmid dîn.","tr":"Hesap gününün sahibidir."},{"n":5,"ar":"إِيَّاكَ نَعْبُدُ وَإِيَّاكَ نَسْتَعِينُ","ok":"İyyâke na'büdü ve iyyâke neste'în.","tr":"Yalnız Sana kulluk eder, yalnız Senden yardım dileriz."},{"n":6,"ar":"اهْدِنَا الصِّرَاطَ الْمُسْتَقِيمَ","ok":"İhdinas sırâtal müstakîm.","tr":"Bizi doğru yola ilet."},{"n":7,"ar":"صِرَاطَ الَّذِينَ أَنْعَمْتَ عَلَيْهِمْ غَيْرِ الْمَغْضُوبِ عَلَيْهِمْ وَلَا الضَّالِّينَ","ok":"Sırâtallezîne en'amte aleyhim ğayril mağdûbi aleyhim ve led dâllîn.","tr":"Nimet verdiklerinin yoluna; gazaba uğrayanların ve yolunu şaşıranların yoluna değil."}]},{"id":"ayetelkursi","no":2,"from":255,"name":"Âyetü'l-Kürsî","kind":"ayet","ref":"Bakara 255","ayat":1,"lines":[{"n":255,"ar":"اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ ۚ","ok":"Allâhü lâ ilâhe illâ hüvel hayyül kayyûm.","tr":"Allah, O'ndan başka ilah yoktur; daima diridir, her şeyi ayakta tutandır."},{"n":255,"ar":"لَا تَأْخُذُهُ سِنَةٌ وَلَا نَوْمٌ ۚ","ok":"Lâ te'huzühû sinetün ve lâ nevm.","tr":"O'nu ne uyuklama tutar ne de uyku."},{"n":255,"ar":"لَهُ مَا فِي السَّمَاوَاتِ وَمَا فِي الْأَرْضِ ۗ","ok":"Lehû mâ fis semâvâti ve mâ fil ard.","tr":"Göklerde ve yerde ne varsa O'nundur."},{"n":255,"ar":"مَنْ ذَا الَّذِي يَشْفَعُ عِنْدَهُ إِلَّا بِإِذْنِهِ ۚ","ok":"Men zellezî yeşfeu indehû illâ bi iznih.","tr":"İzni olmadan O'nun katında kim şefaat edebilir?"},{"n":255,"ar":"يَعْلَمُ مَا بَيْنَ أَيْدِيهِمْ وَمَا خَلْفَهُمْ ۖ","ok":"Ya'lemü mâ beyne eydîhim ve mâ halfehüm.","tr":"O, kullarının önündekini de ardındakini de bilir."},{"n":255,"ar":"وَلَا يُحِيطُونَ بِشَيْءٍ مِنْ عِلْمِهِ إِلَّا بِمَا شَاءَ ۚ","ok":"Ve lâ yühîtûne bi şey'in min ilmihî illâ bimâ şâe.","tr":"Onlar O'nun ilminden, ancak O'nun dilediği kadarını kavrayabilirler."},{"n":255,"ar":"وَسِعَ كُرْسِيُّهُ السَّمَاوَاتِ وَالْأَرْضَ ۖ","ok":"Vesia kürsiyyühüs semâvâti vel ard.","tr":"O'nun kürsüsü gökleri ve yeri kuşatmıştır."},{"n":255,"ar":"وَلَا يَئُودُهُ حِفْظُهُمَا ۚ","ok":"Ve lâ yeûdühû hıfzuhumâ.","tr":"Onları koruyup gözetmek O'na ağır gelmez."},{"n":255,"ar":"وَهُوَ الْعَلِيُّ الْعَظِيمُ","ok":"Ve hüvel aliyyül azîm.","tr":"O, çok yücedir, çok büyüktür."}]},{"id":"amenerrasulu","no":2,"from":285,"name":"Âmenerrasûlü","kind":"ayet","ref":"Bakara 285–286","ayat":2,"lines":[{"n":285,"ar":"آمَنَ الرَّسُولُ بِمَا أُنْزِلَ إِلَيْهِ مِنْ رَبِّهِ وَالْمُؤْمِنُونَ ۚ","ok":"Âmener rasûlü bimâ ünzile ileyhi min rabbihî vel mü'minûn.","tr":"Peygamber, Rabbinden kendisine indirilene iman etti; müminler de."},{"n":285,"ar":"كُلٌّ آمَنَ بِاللَّهِ وَمَلَائِكَتِهِ وَكُتُبِهِ وَرُسُلِهِ لَا نُفَرِّقُ بَيْنَ أَحَدٍ مِنْ رُسُلِهِ ۚ","ok":"Küllün âmene billâhi ve melâiketihî ve kütübihî ve rusülih, lâ nüferriku beyne ehadin min rusülih.","tr":"Hepsi Allah'a, meleklerine, kitaplarına ve peygamberlerine iman etti. “O'nun peygamberleri arasında hiçbir ayrım yapmayız.”"},{"n":285,"ar":"وَقَالُوا سَمِعْنَا وَأَطَعْنَا ۖ","ok":"Ve kâlû semi'nâ ve ata'nâ.","tr":"Ve dediler ki: “İşittik ve itaat ettik."},{"n":285,"ar":"غُفْرَانَكَ رَبَّنَا وَإِلَيْكَ الْمَصِيرُ","ok":"Ğufrâneke rabbenâ ve ileykel masîr.","tr":"Rabbimiz, bağışlamanı dileriz; dönüş ancak Sanadır.”"},{"n":286,"ar":"لَا يُكَلِّفُ اللَّهُ نَفْسًا إِلَّا وُسْعَهَا ۚ","ok":"Lâ yükellifullâhü nefsen illâ vüs'ahâ.","tr":"Allah hiç kimseye gücünün üstünde bir yük yüklemez."},{"n":286,"ar":"لَهَا مَا كَسَبَتْ وَعَلَيْهَا مَا اكْتَسَبَتْ ۗ","ok":"Lehâ mâ kesebet ve aleyhâ mektesebet.","tr":"Herkesin kazandığı iyilik kendi lehine, yaptığı kötülük kendi aleyhinedir."},{"n":286,"ar":"رَبَّنَا لَا تُؤَاخِذْنَا إِنْ نَسِينَا أَوْ أَخْطَأْنَا ۚ","ok":"Rabbenâ lâ tüâhıznâ in nesînâ ev ahta'nâ.","tr":"Rabbimiz! Unutur ya da yanılırsak bizi sorumlu tutma."},{"n":286,"ar":"رَبَّنَا وَلَا تَحْمِلْ عَلَيْنَا إِصْرًا كَمَا حَمَلْتَهُ عَلَى الَّذِينَ مِنْ قَبْلِنَا ۚ","ok":"Rabbenâ ve lâ tahmil aleynâ ısran kemâ hameltehû alellezîne min kablinâ.","tr":"Rabbimiz! Bizden öncekilere yüklediğin gibi bize de ağır yük yükleme."},{"n":286,"ar":"رَبَّنَا وَلَا تُحَمِّلْنَا مَا لَا طَاقَةَ لَنَا بِهِ ۖ","ok":"Rabbenâ ve lâ tühammilnâ mâ lâ tâkate lenâ bih.","tr":"Rabbimiz! Gücümüzün yetmediği şeyleri bize taşıtma."},{"n":286,"ar":"وَاعْفُ عَنَّا وَاغْفِرْ لَنَا وَارْحَمْنَا ۚ","ok":"Va'fü annâ, vağfir lenâ, verhamnâ.","tr":"Bizi affet, bizi bağışla, bize merhamet et."},{"n":286,"ar":"أَنْتَ مَوْلَانَا فَانْصُرْنَا عَلَى الْقَوْمِ الْكَافِرِينَ","ok":"Ente mevlânâ fensurnâ alel kavmil kâfirîn.","tr":"Sen bizim Mevlâmızsın; kâfirler topluluğuna karşı bize yardım et."}]},{"id":"duha","no":93,"from":1,"name":"Duhâ","kind":"sure","ayat":11,"lines":[{"n":1,"ar":"وَالضُّحَىٰ","ok":"Ved duhâ.","tr":"Kuşluk vaktine andolsun,"},{"n":2,"ar":"وَاللَّيْلِ إِذَا سَجَىٰ","ok":"Vel leyli izâ secâ.","tr":"sükûna erdiğinde geceye andolsun ki,"},{"n":3,"ar":"مَا وَدَّعَكَ رَبُّكَ وَمَا قَلَىٰ","ok":"Mâ vedde'ake rabbüke ve mâ kalâ.","tr":"Rabbin seni bırakmadı, sana darılmadı da."},{"n":4,"ar":"وَلَلْآخِرَةُ خَيْرٌ لَكَ مِنَ الْأُولَىٰ","ok":"Ve lel âhiratü hayrun leke minel ûlâ.","tr":"Ahiret senin için elbette dünyadan daha hayırlıdır."},{"n":5,"ar":"وَلَسَوْفَ يُعْطِيكَ رَبُّكَ فَتَرْضَىٰ","ok":"Ve le sevfe yu'tîke rabbüke fe terdâ.","tr":"Rabbin sana mutlaka verecek, sen de hoşnut olacaksın."},{"n":6,"ar":"أَلَمْ يَجِدْكَ يَتِيمًا فَآوَىٰ","ok":"E lem yecidke yetîmen fe âvâ.","tr":"Seni yetim bulup barındırmadı mı?"},{"n":7,"ar":"وَوَجَدَكَ ضَالًّا فَهَدَىٰ","ok":"Ve vecedeke dâllen fe hedâ.","tr":"Seni yol arayan biri olarak bulup doğru yola iletmedi mi?"},{"n":8,"ar":"وَوَجَدَكَ عَائِلًا فَأَغْنَىٰ","ok":"Ve vecedeke âilen fe ağnâ.","tr":"Seni yoksul bulup zengin etmedi mi?"},{"n":9,"ar":"فَأَمَّا الْيَتِيمَ فَلَا تَقْهَرْ","ok":"Fe emmel yetîme fe lâ takhar.","tr":"Öyleyse yetimi ezme,"},{"n":10,"ar":"وَأَمَّا السَّائِلَ فَلَا تَنْهَرْ","ok":"Ve emmes sâile fe lâ tenher.","tr":"isteyeni de azarlama,"},{"n":11,"ar":"وَأَمَّا بِنِعْمَةِ رَبِّكَ فَحَدِّثْ","ok":"Ve emmâ bi ni'meti rabbike fe haddis.","tr":"Rabbinin nimetini ise anlat."}]},{"id":"insirah","no":94,"from":1,"name":"İnşirah","kind":"sure","ayat":8,"lines":[{"n":1,"ar":"أَلَمْ نَشْرَحْ لَكَ صَدْرَكَ","ok":"E lem neşrah leke sadrak.","tr":"Senin göğsünü açıp genişletmedik mi?"},{"n":2,"ar":"وَوَضَعْنَا عَنْكَ وِزْرَكَ","ok":"Ve veda'nâ anke vizrak.","tr":"Yükünü üzerinden kaldırmadık mı?"},{"n":3,"ar":"الَّذِي أَنْقَضَ ظَهْرَكَ","ok":"Ellezî enkada zahrak.","tr":"O, belini büken yükü."},{"n":4,"ar":"وَرَفَعْنَا لَكَ ذِكْرَكَ","ok":"Ve refa'nâ leke zikrak.","tr":"Senin şanını yüceltmedik mi?"},{"n":5,"ar":"فَإِنَّ مَعَ الْعُسْرِ يُسْرًا","ok":"Fe inne meal usri yüsrâ.","tr":"Şüphesiz zorlukla beraber bir kolaylık vardır."},{"n":6,"ar":"إِنَّ مَعَ الْعُسْرِ يُسْرًا","ok":"İnne meal usri yüsrâ.","tr":"Gerçekten zorlukla beraber bir kolaylık vardır."},{"n":7,"ar":"فَإِذَا فَرَغْتَ فَانْصَبْ","ok":"Fe izâ ferağte fensab.","tr":"Bir işi bitirince hemen başka bir işe koyul,"},{"n":8,"ar":"وَإِلَىٰ رَبِّكَ فَارْغَبْ","ok":"Ve ilâ rabbike ferğab.","tr":"ve yalnız Rabbine yönel."}]},{"id":"tin","no":95,"from":1,"name":"Tîn","kind":"sure","ayat":8,"lines":[{"n":1,"ar":"وَالتِّينِ وَالزَّيْتُونِ","ok":"Vet tîni vez zeytûn.","tr":"İncire ve zeytine andolsun,"},{"n":2,"ar":"وَطُورِ سِينِينَ","ok":"Ve tûri sînîn.","tr":"Sînâ Dağı'na,"},{"n":3,"ar":"وَهَٰذَا الْبَلَدِ الْأَمِينِ","ok":"Ve hâzel beledil emîn.","tr":"ve bu güvenli şehre (Mekke'ye) andolsun ki,"},{"n":4,"ar":"لَقَدْ خَلَقْنَا الْإِنْسَانَ فِي أَحْسَنِ تَقْوِيمٍ","ok":"Le kad halaknel insâne fî ahseni takvîm.","tr":"Biz insanı en güzel biçimde yarattık."},{"n":5,"ar":"ثُمَّ رَدَدْنَاهُ أَسْفَلَ سَافِلِينَ","ok":"Sümme radednâhü esfele sâfilîn.","tr":"Sonra onu aşağıların en aşağısına indirdik."},{"n":6,"ar":"إِلَّا الَّذِينَ آمَنُوا وَعَمِلُوا الصَّالِحَاتِ فَلَهُمْ أَجْرٌ غَيْرُ مَمْنُونٍ","ok":"İllellezîne âmenû ve amilüs sâlihâti fe lehüm ecrun ğayru memnûn.","tr":"Ancak iman edip salih ameller işleyenler başka; onlar için kesintisiz bir mükâfat vardır."},{"n":7,"ar":"فَمَا يُكَذِّبُكَ بَعْدُ بِالدِّينِ","ok":"Fe mâ yükezzibüke ba'dü bid dîn.","tr":"Artık bundan sonra seni hesap gününü yalanlamaya ne sevk edebilir?"},{"n":8,"ar":"أَلَيْسَ اللَّهُ بِأَحْكَمِ الْحَاكِمِينَ","ok":"E leysallâhü bi ahkemil hâkimîn.","tr":"Allah, hüküm verenlerin en iyi hüküm vereni değil midir?"}]},{"id":"kadr","no":97,"from":1,"name":"Kadir","kind":"sure","ayat":5,"lines":[{"n":1,"ar":"إِنَّا أَنْزَلْنَاهُ فِي لَيْلَةِ الْقَدْرِ","ok":"İnnâ enzelnâhü fî leyletil kadr.","tr":"Şüphesiz Biz onu (Kur'an'ı) Kadir gecesinde indirdik."},{"n":2,"ar":"وَمَا أَدْرَاكَ مَا لَيْلَةُ الْقَدْرِ","ok":"Ve mâ edrâke mâ leyletül kadr.","tr":"Kadir gecesinin ne olduğunu sen nereden bileceksin?"},{"n":3,"ar":"لَيْلَةُ الْقَدْرِ خَيْرٌ مِنْ أَلْفِ شَهْرٍ","ok":"Leyletül kadri hayrun min elfi şehr.","tr":"Kadir gecesi bin aydan daha hayırlıdır."},{"n":4,"ar":"تَنَزَّلُ الْمَلَائِكَةُ وَالرُّوحُ فِيهَا بِإِذْنِ رَبِّهِمْ مِنْ كُلِّ أَمْرٍ","ok":"Tenezzelül melâiketü ver rûhu fîhâ bi izni rabbihim min külli emr.","tr":"O gece melekler ve Ruh (Cebrail), Rablerinin izniyle her iş için iner de iner."},{"n":5,"ar":"سَلَامٌ هِيَ حَتَّىٰ مَطْلَعِ الْفَجْرِ","ok":"Selâmün hiye hattâ matla'il fecr.","tr":"O gece, tan yeri ağarıncaya kadar esenliktir."}]},{"id":"zilzal","no":99,"from":1,"name":"Zilzâl","kind":"sure","ayat":8,"lines":[{"n":1,"ar":"إِذَا زُلْزِلَتِ الْأَرْضُ زِلْزَالَهَا","ok":"İzâ zülziletil ardu zilzâlehâ.","tr":"Yer, o şiddetli sarsıntısıyla sarsıldığında,"},{"n":2,"ar":"وَأَخْرَجَتِ الْأَرْضُ أَثْقَالَهَا","ok":"Ve ahracetil ardu eskâlehâ.","tr":"yer ağırlıklarını dışarı çıkardığında,"},{"n":3,"ar":"وَقَالَ الْإِنْسَانُ مَا لَهَا","ok":"Ve kâlel insânü mâ lehâ.","tr":"ve insan “Buna ne oluyor?” dediğinde,"},{"n":4,"ar":"يَوْمَئِذٍ تُحَدِّثُ أَخْبَارَهَا","ok":"Yevmeizin tühaddisü ahbârahâ.","tr":"işte o gün yer, haberlerini anlatır;"},{"n":5,"ar":"بِأَنَّ رَبَّكَ أَوْحَىٰ لَهَا","ok":"Bi enne rabbeke evhâ lehâ.","tr":"çünkü Rabbin ona böyle emretmiştir."},{"n":6,"ar":"يَوْمَئِذٍ يَصْدُرُ النَّاسُ أَشْتَاتًا لِيُرَوْا أَعْمَالَهُمْ","ok":"Yevmeizin yasdürun nâsü eştâten li yürav a'mâlehüm.","tr":"O gün insanlar, yaptıkları kendilerine gösterilmek üzere bölük bölük çıkıp gelirler."},{"n":7,"ar":"فَمَنْ يَعْمَلْ مِثْقَالَ ذَرَّةٍ خَيْرًا يَرَهُ","ok":"Fe men ya'mel miskâle zerratin hayran yerah.","tr":"Kim zerre ağırlığınca bir iyilik yaparsa onu görür."},{"n":8,"ar":"وَمَنْ يَعْمَلْ مِثْقَالَ ذَرَّةٍ شَرًّا يَرَهُ","ok":"Ve men ya'mel miskâle zerratin şerran yerah.","tr":"Kim de zerre ağırlığınca bir kötülük yaparsa onu görür."}]},{"id":"adiyat","no":100,"from":1,"name":"Âdiyât","kind":"sure","ayat":11,"lines":[{"n":1,"ar":"وَالْعَادِيَاتِ ضَبْحًا","ok":"Vel âdiyâti dabhâ.","tr":"Soluk soluğa koşanlara andolsun,"},{"n":2,"ar":"فَالْمُورِيَاتِ قَدْحًا","ok":"Fel mûriyâti kadhâ.","tr":"nallarıyla kıvılcım saçanlara,"},{"n":3,"ar":"فَالْمُغِيرَاتِ صُبْحًا","ok":"Fel muğîrâti subhâ.","tr":"sabah vakti baskın yapanlara,"},{"n":4,"ar":"فَأَثَرْنَ بِهِ نَقْعًا","ok":"Fe eserne bihî nak'â.","tr":"orada tozu dumana katanlara,"},{"n":5,"ar":"فَوَسَطْنَ بِهِ جَمْعًا","ok":"Fe vesatne bihî cem'â.","tr":"ve bir topluluğun ortasına dalanlara andolsun ki,"},{"n":6,"ar":"إِنَّ الْإِنْسَانَ لِرَبِّهِ لَكَنُودٌ","ok":"İnnel insâne li rabbihî le kenûd.","tr":"insan Rabbine karşı gerçekten çok nankördür."},{"n":7,"ar":"وَإِنَّهُ عَلَىٰ ذَٰلِكَ لَشَهِيدٌ","ok":"Ve innehû alâ zâlike le şehîd.","tr":"Kendisi de buna şahittir."},{"n":8,"ar":"وَإِنَّهُ لِحُبِّ الْخَيْرِ لَشَدِيدٌ","ok":"Ve innehû li hubbil hayri le şedîd.","tr":"O, mal sevgisine de çok düşkündür."},{"n":9,"ar":"أَفَلَا يَعْلَمُ إِذَا بُعْثِرَ مَا فِي الْقُبُورِ","ok":"E fe lâ ya'lemü izâ bu'sira mâ fil kubûr.","tr":"Bilmez mi ki kabirlerde olanlar dışarı çıkarıldığında,"},{"n":10,"ar":"وَحُصِّلَ مَا فِي الصُّدُورِ","ok":"Ve hussıla mâ fis sudûr.","tr":"ve gönüllerde olanlar ortaya döküldüğünde,"},{"n":11,"ar":"إِنَّ رَبَّهُمْ بِهِمْ يَوْمَئِذٍ لَخَبِيرٌ","ok":"İnne rabbehüm bihim yevmeizin le habîr.","tr":"o gün Rableri onların her hâlinden elbette haberdardır."}]},{"id":"karia","no":101,"from":1,"name":"Kâria","kind":"sure","ayat":11,"lines":[{"n":1,"ar":"الْقَارِعَةُ","ok":"El kâriah.","tr":"Kapıyı çalan o büyük olay!"},{"n":2,"ar":"مَا الْقَارِعَةُ","ok":"Mel kâriah.","tr":"Nedir o kapıyı çalan?"},{"n":3,"ar":"وَمَا أَدْرَاكَ مَا الْقَارِعَةُ","ok":"Ve mâ edrâke mel kâriah.","tr":"Kapıyı çalanın ne olduğunu sen nereden bileceksin?"},{"n":4,"ar":"يَوْمَ يَكُونُ النَّاسُ كَالْفَرَاشِ الْمَبْثُوثِ","ok":"Yevme yekûnün nâsü kel ferâşil mebsûs.","tr":"O gün insanlar, etrafa dağılmış pervaneler gibi olur."},{"n":5,"ar":"وَتَكُونُ الْجِبَالُ كَالْعِهْنِ الْمَنْفُوشِ","ok":"Ve tekûnül cibâlü kel ıhnil menfûş.","tr":"Dağlar da atılmış renkli yün gibi olur."},{"n":6,"ar":"فَأَمَّا مَنْ ثَقُلَتْ مَوَازِينُهُ","ok":"Fe emmâ men sekulet mevâzînüh.","tr":"Kimin tartıları ağır gelirse,"},{"n":7,"ar":"فَهُوَ فِي عِيشَةٍ رَاضِيَةٍ","ok":"Fe hüve fî îşetin râdıyeh.","tr":"o, hoşnut olacağı bir hayat içindedir."},{"n":8,"ar":"وَأَمَّا مَنْ خَفَّتْ مَوَازِينُهُ","ok":"Ve emmâ men haffet mevâzînüh.","tr":"Kimin de tartıları hafif gelirse,"},{"n":9,"ar":"فَأُمُّهُ هَاوِيَةٌ","ok":"Fe ümmühû hâviyeh.","tr":"onun varacağı yer Hâviye'dir."},{"n":10,"ar":"وَمَا أَدْرَاكَ مَا هِيَهْ","ok":"Ve mâ edrâke mâ hiyeh.","tr":"Onun ne olduğunu sen nereden bileceksin?"},{"n":11,"ar":"نَارٌ حَامِيَةٌ","ok":"Nârun hâmiyeh.","tr":"O, kızgın bir ateştir."}]},{"id":"tekasur","no":102,"from":1,"name":"Tekâsür","kind":"sure","ayat":8,"lines":[{"n":1,"ar":"أَلْهَاكُمُ التَّكَاثُرُ","ok":"Elhâkümüt tekâsür.","tr":"Çoklukla övünme yarışı sizi oyaladı,"},{"n":2,"ar":"حَتَّىٰ زُرْتُمُ الْمَقَابِرَ","ok":"Hattâ zürtümül mekâbir.","tr":"kabirlere varıncaya kadar."},{"n":3,"ar":"كَلَّا سَوْفَ تَعْلَمُونَ","ok":"Kellâ sevfe ta'lemûn.","tr":"Hayır! Yakında bileceksiniz."},{"n":4,"ar":"ثُمَّ كَلَّا سَوْفَ تَعْلَمُونَ","ok":"Sümme kellâ sevfe ta'lemûn.","tr":"Yine hayır! Yakında bileceksiniz."},{"n":5,"ar":"كَلَّا لَوْ تَعْلَمُونَ عِلْمَ الْيَقِينِ","ok":"Kellâ lev ta'lemûne ilmel yakîn.","tr":"Hayır! Kesin bir bilgiyle bilseydiniz (böyle yapmazdınız)."},{"n":6,"ar":"لَتَرَوُنَّ الْجَحِيمَ","ok":"Le teravünnel cahîm.","tr":"Cehennemi mutlaka göreceksiniz."},{"n":7,"ar":"ثُمَّ لَتَرَوُنَّهَا عَيْنَ الْيَقِينِ","ok":"Sümme le teravünnehâ aynel yakîn.","tr":"Sonra onu gözünüzle, apaçık göreceksiniz."},{"n":8,"ar":"ثُمَّ لَتُسْأَلُنَّ يَوْمَئِذٍ عَنِ النَّعِيمِ","ok":"Sümme le tüs'elünne yevmeizin anin naîm.","tr":"Sonra o gün, size verilen nimetlerden mutlaka sorguya çekileceksiniz."}]},{"id":"asr","no":103,"from":1,"name":"Asr","kind":"sure","ayat":3,"lines":[{"n":1,"ar":"وَالْعَصْرِ","ok":"Vel asr.","tr":"Asra (zamana) andolsun ki,"},{"n":2,"ar":"إِنَّ الْإِنْسَانَ لَفِي خُسْرٍ","ok":"İnnel insâne le fî husr.","tr":"insan gerçekten ziyan içindedir."},{"n":3,"ar":"إِلَّا الَّذِينَ آمَنُوا وَعَمِلُوا الصَّالِحَاتِ وَتَوَاصَوْا بِالْحَقِّ وَتَوَاصَوْا بِالصَّبْرِ","ok":"İllellezîne âmenû ve amilüs sâlihâti ve tevâsav bil hakkı ve tevâsav bis sabr.","tr":"Ancak iman edip salih ameller işleyenler, birbirlerine hakkı ve sabrı tavsiye edenler başka."}]},{"id":"humeze","no":104,"from":1,"name":"Hümeze","kind":"sure","ayat":9,"lines":[{"n":1,"ar":"وَيْلٌ لِكُلِّ هُمَزَةٍ لُمَزَةٍ","ok":"Veylün li külli hümezetin lümezeh.","tr":"Arkadan çekiştiren, yüze karşı kusur arayan herkesin vay hâline!"},{"n":2,"ar":"الَّذِي جَمَعَ مَالًا وَعَدَّدَهُ","ok":"Ellezî ceme'a mâlen ve addedeh.","tr":"O, mal toplayıp onu tekrar tekrar sayar."},{"n":3,"ar":"يَحْسَبُ أَنَّ مَالَهُ أَخْلَدَهُ","ok":"Yahsebü enne mâlehû ahledeh.","tr":"Malının kendisini ölümsüz kılacağını sanır."},{"n":4,"ar":"كَلَّا ۖ لَيُنْبَذَنَّ فِي الْحُطَمَةِ","ok":"Kellâ, le yünbezenne fil hutameh.","tr":"Hayır! O, mutlaka Hutame'ye atılacaktır."},{"n":5,"ar":"وَمَا أَدْرَاكَ مَا الْحُطَمَةُ","ok":"Ve mâ edrâke mel hutameh.","tr":"Hutame'nin ne olduğunu sen nereden bileceksin?"},{"n":6,"ar":"نَارُ اللَّهِ الْمُوقَدَةُ","ok":"Nârullâhil mûkadeh.","tr":"O, Allah'ın tutuşturulmuş ateşidir;"},{"n":7,"ar":"الَّتِي تَطَّلِعُ عَلَى الْأَفْئِدَةِ","ok":"Elletî tettali'u alel ef'ideh.","tr":"yüreklere kadar işler."},{"n":8,"ar":"إِنَّهَا عَلَيْهِمْ مُؤْصَدَةٌ","ok":"İnnehâ aleyhim mü'sadeh.","tr":"O ateş onların üzerine kapatılmıştır,"},{"n":9,"ar":"فِي عَمَدٍ مُمَدَّدَةٍ","ok":"Fî amedin mümeddedeh.","tr":"uzatılmış sütunlar içinde."}]},{"id":"fil","no":105,"from":1,"name":"Fil","kind":"sure","ayat":5,"lines":[{"n":1,"ar":"أَلَمْ تَرَ كَيْفَ فَعَلَ رَبُّكَ بِأَصْحَابِ الْفِيلِ","ok":"E lem tera keyfe fe'ale rabbüke bi ashâbil fîl.","tr":"Rabbinin fil sahiplerine ne yaptığını görmedin mi?"},{"n":2,"ar":"أَلَمْ يَجْعَلْ كَيْدَهُمْ فِي تَضْلِيلٍ","ok":"E lem yec'al keydehüm fî tadlîl.","tr":"Onların tuzağını boşa çıkarmadı mı?"},{"n":3,"ar":"وَأَرْسَلَ عَلَيْهِمْ طَيْرًا أَبَابِيلَ","ok":"Ve ersele aleyhim tayran ebâbîl.","tr":"Üzerlerine sürü sürü kuşlar gönderdi;"},{"n":4,"ar":"تَرْمِيهِمْ بِحِجَارَةٍ مِنْ سِجِّيلٍ","ok":"Termîhim bi hıcâratin min siccîl.","tr":"o kuşlar onlara pişmiş çamurdan taşlar atıyordu."},{"n":5,"ar":"فَجَعَلَهُمْ كَعَصْفٍ مَأْكُولٍ","ok":"Fe ce'alehüm ke asfin me'kûl.","tr":"Sonunda onları yenilmiş ekin yaprağı gibi yaptı."}]},{"id":"kureys","no":106,"from":1,"name":"Kureyş","kind":"sure","ayat":4,"lines":[{"n":1,"ar":"لِإِيلَافِ قُرَيْشٍ","ok":"Li îlâfi kureyş.","tr":"Kureyş'in alışkanlığı için,"},{"n":2,"ar":"إِيلَافِهِمْ رِحْلَةَ الشِّتَاءِ وَالصَّيْفِ","ok":"Îlâfihim rıhleteş şitâi ves sayf.","tr":"kış ve yaz yolculuklarına alışkanlıkları için,"},{"n":3,"ar":"فَلْيَعْبُدُوا رَبَّ هَٰذَا الْبَيْتِ","ok":"Fel ya'büdû rabbe hâzel beyt.","tr":"bu Evin (Kâbe'nin) Rabbine kulluk etsinler;"},{"n":4,"ar":"الَّذِي أَطْعَمَهُمْ مِنْ جُوعٍ وَآمَنَهُمْ مِنْ خَوْفٍ","ok":"Ellezî at'amehüm min cû'in ve âmenehüm min havf.","tr":"O ki onları açlıktan doyurdu, korkudan emin kıldı."}]},{"id":"maun","no":107,"from":1,"name":"Mâûn","kind":"sure","ayat":7,"lines":[{"n":1,"ar":"أَرَأَيْتَ الَّذِي يُكَذِّبُ بِالدِّينِ","ok":"E raeytellezî yükezzibü bid dîn.","tr":"Hesap gününü yalanlayanı gördün mü?"},{"n":2,"ar":"فَذَٰلِكَ الَّذِي يَدُعُّ الْيَتِيمَ","ok":"Fe zâlikellezî yedu'ul yetîm.","tr":"İşte o, yetimi itip kakar,"},{"n":3,"ar":"وَلَا يَحُضُّ عَلَىٰ طَعَامِ الْمِسْكِينِ","ok":"Ve lâ yehuddu alâ taâmil miskîn.","tr":"yoksulu doyurmaya teşvik etmez."},{"n":4,"ar":"فَوَيْلٌ لِلْمُصَلِّينَ","ok":"Fe veylün lil müsallîn.","tr":"Vay hâline o namaz kılanların ki,"},{"n":5,"ar":"الَّذِينَ هُمْ عَنْ صَلَاتِهِمْ سَاهُونَ","ok":"Ellezîne hüm an salâtihim sâhûn.","tr":"onlar namazlarından gafildirler;"},{"n":6,"ar":"الَّذِينَ هُمْ يُرَاءُونَ","ok":"Ellezîne hüm yürâûn.","tr":"onlar gösteriş yaparlar"},{"n":7,"ar":"وَيَمْنَعُونَ الْمَاعُونَ","ok":"Ve yemne'ûnel mâ'ûn.","tr":"ve en küçük yardımı bile esirgerler."}]},{"id":"kevser","no":108,"from":1,"name":"Kevser","kind":"sure","ayat":3,"lines":[{"n":1,"ar":"إِنَّا أَعْطَيْنَاكَ الْكَوْثَرَ","ok":"İnnâ a'taynâkel kevser.","tr":"Şüphesiz Biz sana Kevser'i (pek çok hayır) verdik."},{"n":2,"ar":"فَصَلِّ لِرَبِّكَ وَانْحَرْ","ok":"Fe salli li rabbike venhar.","tr":"Öyleyse Rabbin için namaz kıl ve kurban kes."},{"n":3,"ar":"إِنَّ شَانِئَكَ هُوَ الْأَبْتَرُ","ok":"İnne şânieke hüvel ebter.","tr":"Asıl soyu kesik olan, sana kin besleyendir."}]},{"id":"kafirun","no":109,"from":1,"name":"Kâfirûn","kind":"sure","ayat":6,"lines":[{"n":1,"ar":"قُلْ يَا أَيُّهَا الْكَافِرُونَ","ok":"Kul yâ eyyühel kâfirûn.","tr":"De ki: Ey kâfirler!"},{"n":2,"ar":"لَا أَعْبُدُ مَا تَعْبُدُونَ","ok":"Lâ a'büdü mâ ta'büdûn.","tr":"Ben sizin taptıklarınıza tapmam."},{"n":3,"ar":"وَلَا أَنْتُمْ عَابِدُونَ مَا أَعْبُدُ","ok":"Ve lâ entüm âbidûne mâ a'büd.","tr":"Siz de benim kulluk ettiğime kulluk etmiyorsunuz."},{"n":4,"ar":"وَلَا أَنَا عَابِدٌ مَا عَبَدْتُمْ","ok":"Ve lâ ene âbidün mâ abedtüm.","tr":"Ben de sizin taptıklarınıza tapacak değilim."},{"n":5,"ar":"وَلَا أَنْتُمْ عَابِدُونَ مَا أَعْبُدُ","ok":"Ve lâ entüm âbidûne mâ a'büd.","tr":"Siz de benim kulluk ettiğime kulluk edecek değilsiniz."},{"n":6,"ar":"لَكُمْ دِينُكُمْ وَلِيَ دِينِ","ok":"Leküm dînüküm ve liye dîn.","tr":"Sizin dininiz size, benim dinim bana."}]},{"id":"nasr","no":110,"from":1,"name":"Nasr","kind":"sure","ayat":3,"lines":[{"n":1,"ar":"إِذَا جَاءَ نَصْرُ اللَّهِ وَالْفَتْحُ","ok":"İzâ câe nasrullâhi vel feth.","tr":"Allah'ın yardımı ve fetih geldiğinde,"},{"n":2,"ar":"وَرَأَيْتَ النَّاسَ يَدْخُلُونَ فِي دِينِ اللَّهِ أَفْوَاجًا","ok":"Ve raeyten nâse yedhulûne fî dînillâhi efvâcâ.","tr":"ve insanların bölük bölük Allah'ın dinine girdiğini gördüğünde,"},{"n":3,"ar":"فَسَبِّحْ بِحَمْدِ رَبِّكَ وَاسْتَغْفِرْهُ ۚ إِنَّهُ كَانَ تَوَّابًا","ok":"Fe sebbih bi hamdi rabbike vestağfirh, innehû kâne tevvâbâ.","tr":"Rabbini hamd ile tesbih et ve O'ndan bağışlanma dile. Şüphesiz O, tövbeleri çok kabul edendir."}]},{"id":"tebbet","no":111,"from":1,"name":"Tebbet","kind":"sure","ayat":5,"lines":[{"n":1,"ar":"تَبَّتْ يَدَا أَبِي لَهَبٍ وَتَبَّ","ok":"Tebbet yedâ ebî lehebin ve tebb.","tr":"Ebû Leheb'in elleri kurusun; kurudu da."},{"n":2,"ar":"مَا أَغْنَىٰ عَنْهُ مَالُهُ وَمَا كَسَبَ","ok":"Mâ ağnâ anhü mâlühû ve mâ keseb.","tr":"Ne malı ne de kazandıkları ona fayda verdi."},{"n":3,"ar":"سَيَصْلَىٰ نَارًا ذَاتَ لَهَبٍ","ok":"Se yaslâ nâran zâte leheb.","tr":"O, alevli bir ateşe girecek;"},{"n":4,"ar":"وَامْرَأَتُهُ حَمَّالَةَ الْحَطَبِ","ok":"Vemraetühû hammâletel hatab.","tr":"odun taşıyıcı karısı da,"},{"n":5,"ar":"فِي جِيدِهَا حَبْلٌ مِنْ مَسَدٍ","ok":"Fî cîdihâ hablün min mesed.","tr":"boynunda hurma lifinden bükülmüş bir ip olduğu hâlde."}]},{"id":"ihlas","no":112,"from":1,"name":"İhlâs","kind":"sure","ayat":4,"lines":[{"n":1,"ar":"قُلْ هُوَ اللَّهُ أَحَدٌ","ok":"Kul hüvallâhü ehad.","tr":"De ki: O, Allah'tır, birdir."},{"n":2,"ar":"اللَّهُ الصَّمَدُ","ok":"Allâhüs samed.","tr":"Allah Samed'dir: her şey O'na muhtaçtır, O hiçbir şeye muhtaç değildir."},{"n":3,"ar":"لَمْ يَلِدْ وَلَمْ يُولَدْ","ok":"Lem yelid ve lem yûled.","tr":"Doğurmamış ve doğurulmamıştır."},{"n":4,"ar":"وَلَمْ يَكُنْ لَهُ كُفُوًا أَحَدٌ","ok":"Ve lem yekün lehû küfüven ehad.","tr":"Hiçbir şey O'na denk değildir."}]},{"id":"felak","no":113,"from":1,"name":"Felak","kind":"sure","ayat":5,"lines":[{"n":1,"ar":"قُلْ أَعُوذُ بِرَبِّ الْفَلَقِ","ok":"Kul eûzü bi rabbil felak.","tr":"De ki: Sabahın Rabbine sığınırım;"},{"n":2,"ar":"مِنْ شَرِّ مَا خَلَقَ","ok":"Min şerri mâ halak.","tr":"yarattıklarının şerrinden,"},{"n":3,"ar":"وَمِنْ شَرِّ غَاسِقٍ إِذَا وَقَبَ","ok":"Ve min şerri ğâsikın izâ vekab.","tr":"karanlığı çöktüğünde gecenin şerrinden,"},{"n":4,"ar":"وَمِنْ شَرِّ النَّفَّاثَاتِ فِي الْعُقَدِ","ok":"Ve min şerrin neffâsâti fil ukad.","tr":"düğümlere üfleyenlerin şerrinden,"},{"n":5,"ar":"وَمِنْ شَرِّ حَاسِدٍ إِذَا حَسَدَ","ok":"Ve min şerri hâsidin izâ hased.","tr":"ve haset ettiğinde hasetçinin şerrinden."}]},{"id":"nas","no":114,"from":1,"name":"Nâs","kind":"sure","ayat":6,"lines":[{"n":1,"ar":"قُلْ أَعُوذُ بِرَبِّ النَّاسِ","ok":"Kul eûzü bi rabbin nâs.","tr":"De ki: İnsanların Rabbine sığınırım;"},{"n":2,"ar":"مَلِكِ النَّاسِ","ok":"Melikin nâs.","tr":"insanların Melik'ine (Hükümdarına),"},{"n":3,"ar":"إِلَٰهِ النَّاسِ","ok":"İlâhin nâs.","tr":"insanların İlâh'ına,"},{"n":4,"ar":"مِنْ شَرِّ الْوَسْوَاسِ الْخَنَّاسِ","ok":"Min şerril vesvâsil hannâs.","tr":"o sinsi vesvesecinin şerrinden;"},{"n":5,"ar":"الَّذِي يُوَسْوِسُ فِي صُدُورِ النَّاسِ","ok":"Ellezî yüvesvisü fî sudûrin nâs.","tr":"o ki insanların gönüllerine vesvese verir,"},{"n":6,"ar":"مِنَ الْجِنَّةِ وَالنَّاسِ","ok":"Minel cinneti ven nâs.","tr":"ister cinlerden ister insanlardan olsun."}]}],"duas":{"subhaneke":{"name":"Sübhâneke","where":"1. rekâtta iftitah tekbirinden sonra, ayakta","lines":[{"ar":"سُبْحَانَكَ اللَّهُمَّ وَبِحَمْدِكَ، وَتَبَارَكَ اسْمُكَ، وَتَعَالَىٰ جَدُّكَ، وَلَا إِلَٰهَ غَيْرُكَ","ok":"Sübhânekellâhümme ve bi hamdik, ve tebârakesmük, ve teâlâ ceddük, ve lâ ilâhe ğayrük.","tr":"Allah'ım! Seni her türlü eksiklikten uzak tutar, Sana hamd ederim. Senin adın mübarektir, şanın yücedir. Senden başka ilah yoktur."}]},"euzu":{"name":"Eûzü","where":"1. rekâtta Sübhâneke'den sonra, Fâtiha'dan önce","lines":[{"ar":"أَعُوذُ بِاللَّهِ مِنَ الشَّيْطَانِ الرَّجِيمِ","ok":"Eûzü billâhi mineş şeytânir racîm.","tr":"Kovulmuş şeytanın şerrinden Allah'a sığınırım."}]},"besmele":{"name":"Besmele","where":"Her rekâtta Fâtiha'nın başında","lines":[{"ar":"بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ","ok":"Bismillâhir rahmânir rahîm.","tr":"Rahmân ve Rahîm olan Allah'ın adıyla."}]},"amin":{"name":"Âmîn","where":"Fâtiha bitince, içinden","lines":[{"ar":"آمِينَ","ok":"Âmîn.","tr":"Allah'ım, kabul eyle."}]},"tekbir":{"name":"Tekbir","where":"Namaza başlarken ve hareket geçişlerinde (rükûdan doğrulurken “Semiallâhü limen hamideh” denir)","lines":[{"ar":"اللَّهُ أَكْبَرُ","ok":"Allâhü ekber.","tr":"Allah en büyüktür."}]},"ruku":{"name":"Rükû tesbihi","where":"Rükûda, en az 3 defa","times":3,"lines":[{"ar":"سُبْحَانَ رَبِّيَ الْعَظِيمِ","ok":"Sübhâne rabbiyel azîm.","tr":"Yüce Rabbimi her türlü eksiklikten tenzih ederim."}]},"semiallah":{"name":"Semiallâhu limen hamideh","where":"Rükûdan doğrulurken","lines":[{"ar":"سَمِعَ اللَّهُ لِمَنْ حَمِدَهُ","ok":"Semiallâhü limen hamideh.","tr":"Allah, kendisine hamd edeni işitir."}]},"lekelhamd":{"name":"Rabbenâ leke'l-hamd","where":"Rükûdan doğrulunca, ayakta","lines":[{"ar":"رَبَّنَا لَكَ الْحَمْدُ","ok":"Rabbenâ lekel hamd.","tr":"Rabbimiz! Hamd ancak Sana mahsustur."}]},"secde":{"name":"Secde tesbihi","where":"Her secdede, en az 3 defa","times":3,"lines":[{"ar":"سُبْحَانَ رَبِّيَ الْأَعْلَىٰ","ok":"Sübhâne rabbiyel a'lâ.","tr":"En yüce olan Rabbimi her türlü eksiklikten tenzih ederim."}]},"celse":{"name":"İki secde arası","where":"İki secde arasında otururken (isteğe bağlı)","lines":[{"ar":"رَبِّ اغْفِرْ لِي","ok":"Rabbiğfirlî.","tr":"Rabbim, beni bağışla."}]},"tahiyyat":{"name":"Ettehiyyâtü","where":"Her oturuşta","lines":[{"ar":"التَّحِيَّاتُ لِلَّهِ وَالصَّلَوَاتُ وَالطَّيِّبَاتُ","ok":"Ettehiyyâtü lillâhi vessalevâtü vettayyibât.","tr":"Her türlü saygı ve tazim, dualar ve güzel sözler Allah içindir."},{"ar":"السَّلَامُ عَلَيْكَ أَيُّهَا النَّبِيُّ وَرَحْمَةُ اللَّهِ وَبَرَكَاتُهُ","ok":"Esselâmü aleyke eyyühen nebiyyü ve rahmetullâhi ve berakâtüh.","tr":"Ey Peygamber! Allah'ın selamı, rahmeti ve bereketi senin üzerine olsun."},{"ar":"السَّلَامُ عَلَيْنَا وَعَلَىٰ عِبَادِ اللَّهِ الصَّالِحِينَ","ok":"Esselâmü aleynâ ve alâ ibâdillâhis sâlihîn.","tr":"Selam bizim üzerimize ve Allah'ın salih kullarının üzerine olsun."},{"ar":"أَشْهَدُ أَنْ لَا إِلَٰهَ إِلَّا اللَّهُ وَأَشْهَدُ أَنَّ مُحَمَّدًا عَبْدُهُ وَرَسُولُهُ","ok":"Eşhedü en lâ ilâhe illallâh ve eşhedü enne Muhammeden abdühû ve rasûlüh.","tr":"Şahitlik ederim ki Allah'tan başka ilah yoktur. Yine şahitlik ederim ki Muhammed O'nun kulu ve elçisidir."}],"note":"“Eşhedü en lâ ilâhe” derken sağ elinin şehadet parmağını kaldır, “illallâh” derken indir."},"salli":{"name":"Allâhümme Salli","where":"Son oturuşta Ettehiyyâtü'den sonra","lines":[{"ar":"اللَّهُمَّ صَلِّ عَلَىٰ مُحَمَّدٍ وَعَلَىٰ آلِ مُحَمَّدٍ","ok":"Allâhümme salli alâ Muhammedin ve alâ âli Muhammed,","tr":"Allah'ım! Muhammed'e ve onun ailesine rahmet eyle,"},{"ar":"كَمَا صَلَّيْتَ عَلَىٰ إِبْرَاهِيمَ وَعَلَىٰ آلِ إِبْرَاهِيمَ","ok":"kemâ salleyte alâ İbrâhîme ve alâ âli İbrâhîm.","tr":"İbrahim'e ve onun ailesine rahmet ettiğin gibi."},{"ar":"إِنَّكَ حَمِيدٌ مَجِيدٌ","ok":"İnneke hamîdün mecîd.","tr":"Şüphesiz Sen övülmeye layıksın, şanı yücesin."}]},"barik":{"name":"Allâhümme Bârik","where":"Son oturuşta Salli'den sonra","lines":[{"ar":"اللَّهُمَّ بَارِكْ عَلَىٰ مُحَمَّدٍ وَعَلَىٰ آلِ مُحَمَّدٍ","ok":"Allâhümme bârik alâ Muhammedin ve alâ âli Muhammed,","tr":"Allah'ım! Muhammed'e ve onun ailesine bereket ver,"},{"ar":"كَمَا بَارَكْتَ عَلَىٰ إِبْرَاهِيمَ وَعَلَىٰ آلِ إِبْرَاهِيمَ","ok":"kemâ bârekte alâ İbrâhîme ve alâ âli İbrâhîm.","tr":"İbrahim'e ve onun ailesine bereket verdiğin gibi."},{"ar":"إِنَّكَ حَمِيدٌ مَجِيدٌ","ok":"İnneke hamîdün mecîd.","tr":"Şüphesiz Sen övülmeye layıksın, şanı yücesin."}]},"atina":{"name":"Rabbenâ Âtinâ","where":"Son oturuşta Bârik'ten sonra","ref":"Bakara 201","lines":[{"ar":"رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً وَفِي الْآخِرَةِ حَسَنَةً وَقِنَا عَذَابَ النَّارِ","ok":"Rabbenâ âtinâ fid dünyâ haseneten ve fil âhirati haseneten ve kınâ azâben nâr.","tr":"Rabbimiz! Bize dünyada da iyilik ver, ahirette de iyilik ver ve bizi ateş azabından koru."}]},"agfirli":{"name":"Rabbenağfirlî","where":"Son oturuşta Rabbenâ Âtinâ'dan sonra","ref":"İbrâhim 41","lines":[{"ar":"رَبَّنَا اغْفِرْ لِي وَلِوَالِدَيَّ وَلِلْمُؤْمِنِينَ يَوْمَ يَقُومُ الْحِسَابُ","ok":"Rabbenağfirlî ve li vâlideyye ve lil mü'minîne yevme yekûmül hisâb.","tr":"Rabbimiz! Hesabın görüleceği gün beni, anne-babamı ve bütün müminleri bağışla."}]},"selam":{"name":"Selam","where":"Namazın sonunda önce sağa, sonra sola","lines":[{"ar":"السَّلَامُ عَلَيْكُمْ وَرَحْمَةُ اللَّهِ","ok":"Esselâmü aleyküm ve rahmetullâh.","tr":"Allah'ın selamı ve rahmeti üzerinize olsun."}]},"selamduasi":{"name":"Allâhümme ente's-selâm","where":"Farzdan sonra, selam verince","lines":[{"ar":"اللَّهُمَّ أَنْتَ السَّلَامُ وَمِنْكَ السَّلَامُ، تَبَارَكْتَ يَا ذَا الْجَلَالِ وَالْإِكْرَامِ","ok":"Allâhümme entes selâmü ve minkes selâm, tebârekte yâ zel celâli vel ikrâm.","tr":"Allah'ım! Sen Selâm'sın, esenlik ancak sendendir. Ey celal ve ikram sahibi, Sen ne yücesin!"}]},"kunut1":{"name":"Kunut 1 · Allâhümme innâ neste'înüke","where":"Vitirin 3. rekâtında, kunut tekbirinden sonra","lines":[{"ar":"اللَّهُمَّ إِنَّا نَسْتَعِينُكَ وَنَسْتَغْفِرُكَ وَنَسْتَهْدِيكَ","ok":"Allâhümme innâ neste'înüke ve nestağfirüke ve nestehdîk.","tr":"Allah'ım! Senden yardım isteriz, bağışlanma dileriz, doğru yolu göstermeni isteriz."},{"ar":"وَنُؤْمِنُ بِكَ وَنَتُوبُ إِلَيْكَ وَنَتَوَكَّلُ عَلَيْكَ","ok":"Ve nü'minü bike ve netûbü ileyke ve netevekkelü aleyk.","tr":"Sana inanır, Sana tövbe eder, Sana güveniriz."},{"ar":"وَنُثْنِي عَلَيْكَ الْخَيْرَ كُلَّهُ، نَشْكُرُكَ وَلَا نَكْفُرُكَ","ok":"Ve nüsnî aleykel hayra küllehû, neşkürüke ve lâ nekfürük.","tr":"Bütün hayırlarla Seni överiz; Sana şükrederiz, nankörlük etmeyiz."},{"ar":"وَنَخْلَعُ وَنَتْرُكُ مَنْ يَفْجُرُكَ","ok":"Ve nahleu ve netrükü men yefcürük.","tr":"Sana karşı gelen kimseyi bırakır, ondan uzak dururuz."}]},"kunut2":{"name":"Kunut 2 · Allâhümme iyyâke na'büdü","where":"Vitirde Kunut 1'den hemen sonra","lines":[{"ar":"اللَّهُمَّ إِيَّاكَ نَعْبُدُ، وَلَكَ نُصَلِّي وَنَسْجُدُ","ok":"Allâhümme iyyâke na'büdü ve leke nüsallî ve nescüdü,","tr":"Allah'ım! Yalnız Sana kulluk ederiz; Senin için namaz kılar, Sana secde ederiz."},{"ar":"وَإِلَيْكَ نَسْعَىٰ وَنَحْفِدُ","ok":"ve ileyke nes'â ve nahfidü,","tr":"Sana koşar, Senin rızan için çalışırız."},{"ar":"نَرْجُو رَحْمَتَكَ وَنَخْشَىٰ عَذَابَكَ","ok":"nercû rahmeteke ve nahşâ azâbeke,","tr":"Rahmetini umar, azabından korkarız."},{"ar":"إِنَّ عَذَابَكَ بِالْكُفَّارِ مُلْحِقٌ","ok":"inne azâbeke bil küffâri mülhık.","tr":"Şüphesiz Senin azabın kâfirlere ulaşacaktır."}]},"salavat":{"name":"Salavat","where":"Tesbihatın başında","lines":[{"ar":"اللَّهُمَّ صَلِّ عَلَىٰ سَيِّدِنَا مُحَمَّدٍ وَعَلَىٰ آلِ سَيِّدِنَا مُحَمَّدٍ","ok":"Allâhümme salli alâ seyyidinâ Muhammedin ve alâ âli seyyidinâ Muhammed.","tr":"Allah'ım! Efendimiz Muhammed'e ve onun ailesine rahmet eyle."}]},"tesbihgiris":{"name":"Sübhânallâhi ve'l-hamdü lillâh","where":"Salavattan sonra","lines":[{"ar":"سُبْحَانَ اللَّهِ وَالْحَمْدُ لِلَّهِ وَلَا إِلَٰهَ إِلَّا اللَّهُ وَاللَّهُ أَكْبَرُ","ok":"Sübhânallâhi vel hamdü lillâhi ve lâ ilâhe illallâhü vallâhü ekber.","tr":"Allah her türlü eksiklikten uzaktır; hamd Allah'a mahsustur; Allah'tan başka ilah yoktur; Allah en büyüktür."},{"ar":"وَلَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللَّهِ الْعَلِيِّ الْعَظِيمِ","ok":"Ve lâ havle ve lâ kuvvete illâ billâhil aliyyil azîm.","tr":"Güç ve kuvvet ancak yüce ve büyük olan Allah'ın yardımıyladır."}]},"subhanallah":{"name":"Sübhânallâh","where":"Tesbihatta 33 defa","times":33,"lines":[{"ar":"سُبْحَانَ اللَّهِ","ok":"Sübhânallâh.","tr":"Allah'ı her türlü eksiklikten tenzih ederim."}]},"elhamdulillah":{"name":"Elhamdülillâh","where":"Tesbihatta 33 defa","times":33,"lines":[{"ar":"الْحَمْدُ لِلَّهِ","ok":"Elhamdü lillâh.","tr":"Hamd ve şükür Allah'a mahsustur."}]},"allahuekber":{"name":"Allâhü ekber","where":"Tesbihatta 33 defa","times":33,"lines":[{"ar":"اللَّهُ أَكْبَرُ","ok":"Allâhü ekber.","tr":"Allah en büyüktür."}]},"tehlil":{"name":"Lâ ilâhe illallâhü vahdehû","where":"33'lerden sonra","lines":[{"ar":"لَا إِلَٰهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ، وَهُوَ عَلَىٰ كُلِّ شَيْءٍ قَدِيرٌ","ok":"Lâ ilâhe illallâhü vahdehû lâ şerîke leh, lehül mülkü ve lehül hamdü ve hüve alâ külli şey'in kadîr.","tr":"Allah'tan başka ilah yoktur; O tektir, ortağı yoktur. Mülk O'nundur, hamd O'na mahsustur. O, her şeye gücü yetendir."}]},"duasonu":{"name":"Sübhâne rabbike","where":"Duanın sonunda (isteğe bağlı)","ref":"Sâffât 180–182","lines":[{"ar":"سُبْحَانَ رَبِّكَ رَبِّ الْعِزَّةِ عَمَّا يَصِفُونَ","ok":"Sübhâne rabbike rabbil izzeti ammâ yasifûn.","tr":"İzzet sahibi Rabbin, onların yakıştırdıkları her şeyden uzaktır."},{"ar":"وَسَلَامٌ عَلَى الْمُرْسَلِينَ","ok":"Ve selâmün alel mürselîn.","tr":"Selam, gönderilen peygamberlere olsun."},{"ar":"وَالْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ","ok":"Vel hamdü lillâhi rabbil âlemîn.","tr":"Hamd, âlemlerin Rabbi olan Allah'a mahsustur."}]},"tevhid":{"name":"Lâ ilâhe illallâh","where":"Serbest zikir","lines":[{"ar":"لَا إِلَٰهَ إِلَّا اللَّهُ","ok":"Lâ ilâhe illallâh.","tr":"Allah'tan başka ilah yoktur."}]},"istigfar":{"name":"Estağfirullâh","where":"Serbest zikir","lines":[{"ar":"أَسْتَغْفِرُ اللَّهَ","ok":"Estağfirullâh.","tr":"Allah'tan bağışlanma dilerim."}]}},"source":"Kur'an metni: Tanzil Projesi (tanzil.net), Simple metin, CC BY 3.0; değiştirilmeden kullanılmıştır."};</script>
+<script id="core">
+/* Saf mantık: vakitler, adım üretici, zamm-ı sure kontrolü. Arayüzden bağımsız, test edilebilir. */
+(function(root){
+"use strict";
+var D = root.NAMAZ_DATA;
+var SUR = {}; D.surahs.forEach(function(s){ SUR[s.id] = s; });
+var ZAMM = D.surahs.filter(function(s){ return s.id !== "fatiha"; });
+var AYAT = {93:11,94:8,95:8,96:19,97:5,98:8,99:8,100:11,101:11,102:8,103:3,104:9,105:5,106:4,107:7,108:3,109:6,110:3,111:5,112:4,113:5,114:6};
+var SNAME = {93:"Duhâ",94:"İnşirah",95:"Tîn",96:"Alak",97:"Kadir",98:"Beyyine",99:"Zilzâl",100:"Âdiyât",101:"Kâria",102:"Tekâsür",103:"Asr",104:"Hümeze",105:"Fil",106:"Kureyş",107:"Mâûn",108:"Kevser",109:"Kâfirûn",110:"Nasr",111:"Tebbet",112:"İhlâs",113:"Felak",114:"Nâs"};
+
+var VAKIT = [
+ {id:"sabah", ad:"Sabah", parts:[
+   {id:"sabah-sunnet", ad:"Sünnet", rekat:2, tur:"muekked", niyet:"sabah namazının sünnetini"},
+   {id:"sabah-farz", ad:"Farz", rekat:2, tur:"farz", niyet:"sabah namazının farzını"}]},
+ {id:"ogle", ad:"Öğle", parts:[
+   {id:"ogle-ilk", ad:"İlk sünnet", rekat:4, tur:"muekked", niyet:"öğle namazının ilk sünnetini"},
+   {id:"ogle-farz", ad:"Farz", rekat:4, tur:"farz", niyet:"öğle namazının farzını"},
+   {id:"ogle-son", ad:"Son sünnet", rekat:2, tur:"muekked", niyet:"öğle namazının son sünnetini"}]},
+ {id:"ikindi", ad:"İkindi", parts:[
+   {id:"ikindi-sunnet", ad:"Sünnet", rekat:4, tur:"gayr", niyet:"ikindi namazının sünnetini"},
+   {id:"ikindi-farz", ad:"Farz", rekat:4, tur:"farz", niyet:"ikindi namazının farzını"}]},
+ {id:"aksam", ad:"Akşam", parts:[
+   {id:"aksam-farz", ad:"Farz", rekat:3, tur:"farz", niyet:"akşam namazının farzını"},
+   {id:"aksam-sunnet", ad:"Sünnet", rekat:2, tur:"muekked", niyet:"akşam namazının sünnetini"}]},
+ {id:"yatsi", ad:"Yatsı", parts:[
+   {id:"yatsi-ilk", ad:"İlk sünnet", rekat:4, tur:"gayr", niyet:"yatsı namazının ilk sünnetini"},
+   {id:"yatsi-farz", ad:"Farz", rekat:4, tur:"farz", niyet:"yatsı namazının farzını"},
+   {id:"yatsi-son", ad:"Son sünnet", rekat:2, tur:"muekked", niyet:"yatsı namazının son sünnetini"},
+   {id:"vitir", ad:"Vitir", rekat:3, tur:"vitir", niyetFull:"Niyet ettim Allah rızası için vitir namazını kılmaya."}]},
+ {id:"cuma", ad:"Cuma", parts:[
+   {id:"cuma-ilk", ad:"İlk sünnet", rekat:4, tur:"muekked", niyet:"cuma namazının ilk sünnetini"},
+   {id:"cuma-farz", ad:"Farz", rekat:2, tur:"farz", niyet:"cuma namazının farzını", cemaatOnly:true},
+   {id:"cuma-son", ad:"Son sünnet", rekat:4, tur:"muekked", niyet:"cuma namazının son sünnetini"}]}
+];
+var TUR_AD = {farz:"Farz", muekked:"Sünnet-i müekkede", gayr:"Sünnet-i gayr-i müekkede", vitir:"Vacip"};
+
+var T = {
+ tekbir:{erkek:"Ellerini kulak hizasına kaldır: başparmakların kulak memelerine değsin, avuç içlerin kıbleye baksın. “Allâhü ekber” diyerek namaza başla.",
+         kadin:"Ellerini omuz hizasına kaldır, avuç içlerin kıbleye baksın. “Allâhü ekber” diyerek namaza başla."},
+ kiyam:{erkek:"Sağ elinle sol bileğini kavrayarak ellerini göbeğinin altında bağla. Gözlerin secde edeceğin yere baksın.",
+        kadin:"Sağ elini sol elinin üzerine koyarak ellerini göğsünün üzerinde bağla. Gözlerin secde edeceğin yere baksın."},
+ ruku:{erkek:"“Allâhü ekber” diyerek eğil. Sırtın ve başın düz olsun, parmaklarını açarak dizlerini kavra; gözlerin ayak uçlarına baksın.",
+       kadin:"“Allâhü ekber” diyerek biraz eğil. Ellerini parmakların bitişik olarak dizlerinin üzerine koy; gözlerin ayak uçlarına baksın."},
+ secde:{erkek:"“Allâhü ekber” diyerek secdeye var: önce dizlerin, sonra ellerin, sonra burnun ve alnın yere gelsin. Ellerin kulak hizasında, dirseklerin yerden ve yanlarından ayrı, ayak parmakların kıbleye dönük olsun.",
+        kadin:"“Allâhü ekber” diyerek secdeye var: önce dizlerin, sonra ellerin, sonra burnun ve alnın yere gelsin. Kollarını yanlarına yakın tutup yere yasla, karnını uyluklarına yaklaştır."},
+ celse:{erkek:"“Allâhü ekber” diyerek doğrulup otur ve bir “Sübhânallâh” diyecek kadar bekle. Dilersen “Rabbiğfirlî” de.",
+        kadin:"“Allâhü ekber” diyerek doğrulup otur ve bir “Sübhânallâh” diyecek kadar bekle. Dilersen “Rabbiğfirlî” de."},
+ oturus:{erkek:"“Allâhü ekber” diyerek otur: sol ayağını yatırıp üzerine otur, sağ ayağını parmakları kıbleye dönük dik tut. Ellerin dizlerinin üzerinde, gözlerin kucağına baksın.",
+         kadin:"“Allâhü ekber” diyerek otur: iki ayağını sağ tarafa çıkarıp yere otur. Ellerin dizlerinin üzerinde, gözlerin kucağına baksın."},
+ kunut:{erkek:"Sureden sonra rükûya gitmeden ellerini kulak hizasına kaldır, “Allâhü ekber” de ve ellerini yeniden bağla.",
+        kadin:"Sureden sonra rükûya gitmeden ellerini omuz hizasına kaldır, “Allâhü ekber” de ve ellerini yeniden bağla."},
+ imam:"Hanefî mezhebine göre imama uyan kişi Fâtiha ve sure okumaz: imam sesli okuyorsa susup dinle, içinden okuyorsa bekle. İmam Fâtiha'yı bitirince içinden “Âmîn” de."
+};
+
+function niyetText(p, cem){
+  var s = p.niyetFull || ("Niyet ettim Allah rızası için bugünkü " + p.niyet + " kılmaya.");
+  return cem ? s + " Uydum hazır olan imama." : s;
+}
+function isCemaat(p, o){ return p.tur === "farz" && (!!p.cemaatOnly || !!(o && o.cemaat)); }
+function zammRekats(p){ var out = []; for (var r = 1; r <= p.rekat; r++){ if (p.tur !== "farz" || r <= 2) out.push(r); } return out; }
+function defaultPlan(p, startId){
+  var rs = zammRekats(p), k = rs.length;
+  var s = -1; for (var i = 0; i < ZAMM.length; i++){ if (ZAMM[i].id === startId) { s = i; break; } }
+  if (s < 0) { for (i = 0; i < ZAMM.length; i++){ if (ZAMM[i].id === "fil") { s = i; break; } } }
+  s = Math.max(0, Math.min(s, ZAMM.length - k));
+  var plan = []; for (var r = 0; r < p.rekat; r++) plan.push(null);
+  rs.forEach(function(rr, j){ plan[rr - 1] = ZAMM[s + j].id; });
+  return plan;
+}
+function pairsFor(p){
+  if (p.tur === "farz") return [[1,2]];
+  if (p.tur === "vitir") return [[1,2],[2,3]];
+  if (p.rekat === 4) return [[1,2],[3,4]];
+  return [[1,2]];
+}
+function checkPair(p, aId, bId){
+  var A = SUR[aId], B = SUR[bId];
+  if (!A || !B) return {lvl:"ok", msg:""};
+  if (aId === bId){
+    if (p.tur === "farz"){
+      if (aId === "nas") return {lvl:"info", msg:"Birinci rekâtta Nâs okunduysa ikincide yine Nâs okumak, geriye dönmekten daha uygundur."};
+      return {lvl:"warn", msg:"Farz namazda aynı sureyi iki rekâtta okumak, unutma gibi bir özür yoksa mekruhtur."};
+    }
+    return {lvl:"ok", msg:"Sünnette aynı sureyi tekrar okumak mekruh değildir."};
+  }
+  var before = (B.no < A.no) || (B.no === A.no && B.from < A.from);
+  if (before) return {lvl:"warn", msg:"Sıra ters: Mushaf'ta önce " + B.name + ", sonra " + A.name + " gelir. Sureleri Mushaf sırasıyla okumak sünnettir; tersten okumak tenzîhen mekruhtur, namaz bozulmaz."};
+  if (A.kind === "sure" && B.kind === "sure" && B.no - A.no === 2){
+    var sk = A.no + 1;
+    if (!(AYAT[sk] >= AYAT[A.no] + 3)) return {lvl:"warn", msg:"Arada yalnız bir sure (" + SNAME[sk] + ") atlanıyor; bu tenzîhen mekruh sayılır. Bitişik sureyi ya da en az iki sure ilerisini seç."};
+  }
+  return {lvl:"ok", msg:"Sıra uygun."};
+}
+function checkPlan(p, plan){
+  return pairsFor(p).map(function(pr){
+    var a = plan[pr[0]-1], b = plan[pr[1]-1];
+    var res = checkPair(p, a, b); res.pair = pr; return res;
+  });
+}
+
+function buildSteps(p, o){
+  o = o || {};
+  var g = o.gender === "kadin" ? "kadin" : "erkek";
+  var N = p.rekat, farz = p.tur === "farz", gayr = p.tur === "gayr", vitir = p.tur === "vitir";
+  var cem = isCemaat(p, o);
+  var plan = o.plan || defaultPlan(p, "fil");
+  var st = [];
+  function add(r, ph, title, act, say, extra){
+    var s = {r:r, ph:ph, title:title, act:act, say:say || []};
+    if (extra) for (var k in extra) s[k] = extra[k];
+    st.push(s);
+  }
+  var KALK = "“Allâhü ekber” diyerek ayağa kalk ve ellerini bağla. ";
+  var FAT = "Besmele ile Fâtiha'yı oku. Bitince içinden “Âmîn” de.";
+  for (var r = 1; r <= N; r++){
+    if (r === 1){
+      add(r, "niyet", "Niyet", "Kıbleye dön, ayakta dur. Hangi namazı kılacağını kalbinden geçir; dilinle söylemek de güzeldir.", [{niyet:true}]);
+      add(r, "tekbir", "İftitah tekbiri", T.tekbir[g] + (cem ? " İmam tekbir aldıktan sonra sen de al." : ""), [{d:"tekbir"}]);
+      add(r, "kiyam", "Sübhâneke", T.kiyam[g] + (cem ? " İmamla birlikte başladıysan Sübhâneke'yi içinden oku." : ""), [{d:"subhaneke"}]);
+      if (cem) add(r, "kiyam", "İmamı dinle", T.imam, [{d:"amin"}]);
+      else {
+        add(r, "kiyam", "Eûzü", "Fâtiha'dan önce içinden oku.", [{d:"euzu"}]);
+        add(r, "kiyam", "Fâtiha", FAT, [{s:"fatiha"}, {d:"amin"}]);
+      }
+    } else if (gayr && r === 3){
+      add(r, "kiyam", "Sübhâneke", KALK + "Gayr-i müekked sünnette 3. rekâta Sübhâneke ile başlanır.", [{d:"subhaneke"}]);
+      add(r, "kiyam", "Eûzü", "Sübhâneke'den sonra içinden oku.", [{d:"euzu"}]);
+      add(r, "kiyam", "Fâtiha", FAT, [{s:"fatiha"}, {d:"amin"}]);
+    } else if (cem){
+      if (r <= 2) add(r, "kiyam", "İmamı dinle", KALK + T.imam, [{d:"amin"}]);
+      else add(r, "kiyam", "İmamı bekle", KALK + "İmam bu rekâtta Fâtiha'yı içinden okur; sen bir şey okumadan bekle.", []);
+    } else {
+      add(r, "kiyam", "Fâtiha", KALK + FAT + (farz && r > 2 ? " Farzın bu rekâtında Fâtiha'dan sonra sure okunmaz." : ""), [{s:"fatiha"}, {d:"amin"}]);
+    }
+    if (!cem && (!farz || r <= 2)){
+      add(r, "kiyam", "Zamm-ı sure", "Fâtiha'dan sonra seçtiğin sureyi oku.", [{s:plan[r-1] || "ihlas", zamm:true}], {zamm:true});
+    }
+    if (vitir && r === 3){
+      add(r, "tekbir", "Kunut tekbiri", T.kunut[g], [{d:"tekbir"}]);
+      add(r, "kiyam", "Kunut duaları", "Ellerin bağlı, ayakta iki kunut duasını oku. Sonra rükûya geç.", [{d:"kunut1"}, {d:"kunut2"}]);
+    }
+    add(r, "ruku", "Rükû", T.ruku[g], [{d:"ruku", times:3}]);
+    add(r, "kavme", "Rükûdan doğrulma",
+        cem ? "İmam “Semiallâhü limen hamideh” diyerek doğrulur. Sen de doğrul; ellerin yanlarında dururken “Rabbenâ leke'l-hamd” de."
+            : "“Semiallâhü limen hamideh” diyerek doğrul. Ellerin yanlarında dik dururken “Rabbenâ leke'l-hamd” de.",
+        cem ? [{d:"lekelhamd"}] : [{d:"semiallah"}, {d:"lekelhamd"}]);
+    add(r, "secde", "1. secde", T.secde[g], [{d:"secde", times:3}]);
+    add(r, "celse", "İki secde arası", T.celse[g], [{d:"celse", opt:true}]);
+    add(r, "secde", "2. secde", "“Allâhü ekber” diyerek tekrar secdeye var.", [{d:"secde", times:3}]);
+    if (r === N){
+      add(r, "oturus", "Son oturuş", T.oturus[g], [{d:"tahiyyat"}]);
+      add(r, "oturus", "Salli · Bârik", "Oturmaya devam et ve Peygamberimize salavat getir.", [{d:"salli"}, {d:"barik"}]);
+      add(r, "oturus", "Rabbenâ duaları", "Ardından Rabbenâ dualarını oku.", [{d:"atina"}, {d:"agfirli"}]);
+      add(r, "selam", "Selam", cem ? "İmam selam verdikten sonra sen de önce sağa, sonra sola selam ver." : "Önce başını sağa çevirip selam ver, sonra sola çevirip aynısını söyle.", [{d:"selam", label:"Sağa"}, {d:"selam", label:"Sola"}]);
+      if (farz) add(r, "oturus", "Selamdan sonra", "Farzdan sonra oturduğun yerde şunu söyle.", [{d:"selamduasi"}]);
+    } else if (r === 2){
+      add(r, "oturus", "İlk oturuş", T.oturus[g] + (gayr ? " Bu sünnette ilk oturuşta Ettehiyyâtü'den sonra Salli ve Bârik de okunur." : " İlk oturuşta yalnız Ettehiyyâtü okunur, sonra kalkılır."),
+          gayr ? [{d:"tahiyyat"}, {d:"salli"}, {d:"barik"}] : [{d:"tahiyyat"}]);
+    }
+  }
+  return st;
+}
+
+root.NamazCore = {D:D, SUR:SUR, ZAMM:ZAMM, VAKIT:VAKIT, TUR_AD:TUR_AD, niyetText:niyetText, isCemaat:isCemaat,
+  zammRekats:zammRekats, defaultPlan:defaultPlan, pairsFor:pairsFor, checkPair:checkPair, checkPlan:checkPlan, buildSteps:buildSteps};
+})(typeof window !== "undefined" ? window : globalThis);
+</script>
+<script>
+(function(){
+"use strict";
+var C = window.NamazCore, D = C.D, SUR = C.SUR, DUA = D.duas, ZAMM = C.ZAMM, VAKIT = C.VAKIT;
+var AR = [25, 31, 38], LAT = [15.5, 17, 19.5];
+var PATH = [
+  {t:"İlk hedef: 3 kısa sure", note:"Bu üç sureyle beş vaktin hepsini kılabilirsin. İki rekâtta Kevser ile İhlâs, vitirde Asr, Kevser ve İhlâs okunur; sıraları birbirine uyar.", items:["kevser","asr","ihlas"]},
+  {t:"Her namazda okunanlar", items:["fatiha","subhaneke","tahiyyat"]},
+  {t:"Son oturuş duaları", items:["salli","barik","atina","agfirli"]},
+  {t:"Yeni sureler · kısadan uzuna", items:["kureys","nasr","nas","felak","fil","tebbet","maun","kafirun","insirah","tekasur","kadr","humeze","tin","karia","zilzal","duha","adiyat"]},
+  {t:"Vitir için", items:["kunut1","kunut2"]},
+  {t:"Âyetler", items:["ayetelkursi","amenerrasulu"]}
+];
+var MEMO = []; PATH.forEach(function(g){ MEMO = MEMO.concat(g.items); });
+function ITEM(id){ var s = SUR[id]; return s ? {id:id, kind:"s", obj:s, name:s.name, lines:s.lines} : {id:id, kind:"d", obj:DUA[id], name:DUA[id].name, lines:DUA[id].lines}; }
+var WAQF = {"ۚ":1, "ۗ":1, "ۖ":1};
+function wordCount(lines){ var n = 0; lines.forEach(function(l){ l.ar.split(/\s+/).forEach(function(w){ if (w && !WAQF[w]) n++; }); }); return n; }
+function level(n){ return n <= 15 ? "Çok kısa" : n <= 25 ? "Kısa" : n <= 35 ? "Orta" : "Uzun"; }
+function ymd(d){ return d.getFullYear() + "-" + ("0" + (d.getMonth() + 1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2); }
+function today(){ return ymd(new Date()); }
+function addDays(n){ var d = new Date(); d.setDate(d.getDate() + n); return ymd(d); }
+var IV = [1, 3, 7, 14, 30, 60];
+function memo(id){ var m = S.ezber[id]; if (m === true){ m = S.ezber[id] = {st:"ok", lv:0, nx:today()}; } return m && typeof m === "object" ? m : null; }
+function isOk(id){ var m = memo(id); return !!(m && m.st === "ok"); }
+function isDue(id){ var m = memo(id); return !!(m && m.st === "ok" && m.nx <= today()); }
+function markOk(id){ S.ezber[id] = {st:"ok", lv:0, nx:addDays(1)}; delete S.ezp[id]; save(); }
+function unmark(id){ delete S.ezber[id]; delete S.ezp[id]; save(); }
+function reviewed(id, good){ var m = memo(id); if (!m) return; if (good){ m.lv = Math.min((m.lv || 0) + 1, IV.length - 1); m.nx = addDays(IV[m.lv]); } else { m.lv = 0; m.nx = addDays(1); } save(); }
+function dueText(id){
+  var m = memo(id); if (!m || m.st !== "ok") return "";
+  if (m.nx <= today()) return "Tekrar zamanı";
+  var days = Math.round((new Date(m.nx + "T12:00:00") - new Date(today() + "T12:00:00")) / 86400000);
+  return days === 1 ? "Tekrar: yarın" : "Tekrar: " + days + " gün sonra";
+}
+function nextItem(){ for (var i = 0; i < MEMO.length; i++){ if (!isOk(MEMO[i])) return MEMO[i]; } return null; }
+function dueItems(){ return MEMO.filter(isDue); }
+
+/* ---------- store (bu tarayıcıda kalır) ---------- */
+var KEY = "namazim.v1";
+var DEF = {ar:1, lat:1, show:{ar:true, ok:true, tr:true}, gender:"erkek", zammStart:"fil", ezber:{}, ezp:{}, zikir:{phrase:"subhanallah", target:33, count:0}};
+var S = load();
+function load(){
+  var base = JSON.parse(JSON.stringify(DEF));
+  try {
+    var raw = localStorage.getItem(KEY);
+    if (raw){
+      var o = JSON.parse(raw) || {};
+      base.ar = [0,1,2].indexOf(o.ar) > -1 ? o.ar : base.ar;
+      base.lat = [0,1,2].indexOf(o.lat) > -1 ? o.lat : base.lat;
+      if (o.show) for (var k in base.show) if (typeof o.show[k] === "boolean") base.show[k] = o.show[k];
+      if (o.gender === "kadin" || o.gender === "erkek") base.gender = o.gender;
+      if (o.zammStart && SUR[o.zammStart]) base.zammStart = o.zammStart;
+      if (o.ezber && typeof o.ezber === "object") base.ezber = o.ezber;
+      if (o.ezp && typeof o.ezp === "object") base.ezp = o.ezp;
+      if (o.zikir && typeof o.zikir === "object"){
+        if (DUA[o.zikir.phrase]) base.zikir.phrase = o.zikir.phrase;
+        if ([33,99,100,0].indexOf(o.zikir.target) > -1) base.zikir.target = o.zikir.target;
+        if (typeof o.zikir.count === "number" && o.zikir.count >= 0) base.zikir.count = o.zikir.count;
+      }
+    }
+  } catch (e) {}
+  return base;
+}
+function save(){ try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} }
+
+/* ---------- helpers ---------- */
+function $(sel, el){ return (el || document).querySelector(sel); }
+function $$(sel, el){ return Array.prototype.slice.call((el || document).querySelectorAll(sel)); }
+function esc(s){ return String(s == null ? "" : s).replace(/[&<>"]/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c]; }); }
+function star(n, cls){ return '<span class="star ' + (cls || "") + '" aria-hidden="true"><span>' + (n == null ? "" : n) + "</span></span>"; }
+function hint(s){
+  return s.replace(/[A-Za-zÇĞİÖŞÜçğıöşüÂÎÛâîû']+/g, function(w){ return w.charAt(0) + new Array(Math.min(6, Math.max(2, w.length))).join("·"); });
+}
+function vib(p){ try { if (navigator.vibrate) navigator.vibrate(p); } catch (e) {} }
+var toastT;
+function toast(msg){
+  var old = $(".toast"); if (old) old.remove();
+  var t = document.createElement("div"); t.className = "toast"; t.setAttribute("role", "status"); t.textContent = msg;
+  document.body.appendChild(t); clearTimeout(toastT); toastT = setTimeout(function(){ t.remove(); }, 2600);
+}
+function applyPrefs(){
+  var r = document.documentElement;
+  r.style.setProperty("--ar", AR[S.ar] + "px");
+  r.style.setProperty("--lat", LAT[S.lat] + "px");
+  document.body.classList.toggle("hide-ar", !S.show.ar);
+  document.body.classList.toggle("hide-ok", !S.show.ok);
+  document.body.classList.toggle("hide-tr", !S.show.tr);
+}
+
+/* ---------- icons ---------- */
+var IC = {
+  namaz:'<svg class="ic" viewBox="0 0 24 24"><path d="M5 21V11a7 7 0 0 1 14 0v10M3 21h18M9.5 21v-5a2.5 2.5 0 0 1 5 0v5"/></svg>',
+  dualar:'<svg class="ic" viewBox="0 0 24 24"><path d="M7 4h8l3 3v13H7z"/><path d="M10 10h5M10 13.5h5M10 17h3"/></svg>',
+  sureler:'<svg class="ic" viewBox="0 0 24 24"><path d="M3 5.5h6a3 3 0 0 1 3 3V20a2 2 0 0 0-2-2H3zM21 5.5h-6a3 3 0 0 0-3 3V20a2 2 0 0 1 2-2h7z"/></svg>',
+  ezber:'<svg class="ic" viewBox="0 0 24 24"><path d="M3 5.5h6a3 3 0 0 1 3 3V20a2 2 0 0 0-2-2H3zM21 5.5h-6a3 3 0 0 0-3 3V20a2 2 0 0 1 2-2h7z"/><path d="M15 10.5l1.6 1.6 3-3.2"/></svg>',
+  ear:'<svg class="ic" viewBox="0 0 24 24"><path d="M7 15.5V9a5 5 0 0 1 10 0c0 3-3 3.5-3 6.5a3 3 0 0 1-5.5 1.7"/><path d="M10 9.5a2 2 0 0 1 4 0"/></svg>',
+  tesbih:'<svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="9.5" r="6"/><circle cx="12" cy="3.5" r="1.2"/><circle cx="6" cy="9.5" r="1.2"/><circle cx="18" cy="9.5" r="1.2"/><path d="M12 15.5v3M10 21.5l2-3 2 3"/></svg>',
+  bilgi:'<svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.6v.01"/></svg>',
+  back:'<svg class="ic" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg>',
+  close:'<svg class="ic" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>',
+  next:'<svg class="ic" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg>',
+  chev:'<svg class="ic chev" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg>',
+  check:'<svg class="ic" viewBox="0 0 24 24" style="stroke-width:3"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>',
+  info:'<svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.6v.01"/></svg>',
+  warn:'<svg class="ic" viewBox="0 0 24 24"><path d="M12 3l9.5 17h-19z"/><path d="M12 10v4.5M12 17.4v.01"/></svg>',
+  ok:'<svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l3 3 5-6"/></svg>',
+  swap:'<svg class="ic" viewBox="0 0 24 24"><path d="M7 7h12l-3-3M17 17H5l3 3"/></svg>',
+  help:'<svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .8-1 1.5v.7M12 17v.01"/></svg>',
+  reset:'<svg class="ic" viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 2.3-5.6M4 4v4h4"/></svg>',
+  play:'<svg class="ic" viewBox="0 0 24 24"><path d="M8 5l11 7-11 7z"/></svg>'
+};
+var VIC = {
+  sabah:'<svg class="ic vi" viewBox="0 0 24 24"><path d="M2 17.5h20M6.5 17.5a5.5 5.5 0 0 1 11 0M12 6.5v2.5M5 10l1.6 1.6M19 10l-1.6 1.6M7 21h10"/></svg>',
+  ogle:'<svg class="ic vi" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M5.3 18.7l1.6-1.6M17.1 6.9l1.6-1.6"/></svg>',
+  ikindi:'<svg class="ic vi" viewBox="0 0 24 24"><circle cx="15.5" cy="9" r="3.8"/><path d="M15.5 2.5v1.6M21.8 9h-1.6M20 4.5l-1.1 1.1M2.5 20.5h19M5 20.5V15M5 15l9 5.5"/></svg>',
+  aksam:'<svg class="ic vi" viewBox="0 0 24 24"><path d="M2 15.5h20M6.5 15.5a5.5 5.5 0 0 1 11 0M12 3v6M9.5 6.5L12 9l2.5-2.5M5 19.5h14"/></svg>',
+  yatsi:'<svg class="ic vi" viewBox="0 0 24 24"><path d="M14 3.5a8.5 8.5 0 1 0 6.5 13.8A7 7 0 0 1 14 3.5z"/><path d="M18.5 3.5v3M17 5h3"/></svg>',
+  cuma:'<svg class="ic vi" viewBox="0 0 24 24"><path d="M3 20.5h18M5.5 20.5v-6a6.5 6.5 0 0 1 13 0v6M12 8V3.5M10.5 5h3M9.5 20.5v-4a2.5 2.5 0 0 1 5 0v4"/></svg>'
+};
+/* Duruş çizimleri (sade çizgi figürler) */
+function fig(ph){
+  var b = '<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">';
+  var e = "</svg>", ground = '<path d="M5 60h54" stroke-width="2" opacity=".35"/>';
+  var head = function(x, y){ return '<circle cx="' + x + '" cy="' + y + '" r="5" fill="currentColor" stroke="none"/>'; };
+  var stand = head(32, 9) + '<path d="M32 16v21M32 37l-4.5 21M32 37l4.5 21"/>';
+  switch (ph){
+    case "tekbir": return b + stand + '<path d="M32 20l-8 3-1.5-11M32 20l8 3 1.5-11"/>' + e;
+    case "kiyam": return b + stand + '<path d="M32 20l-6.5 8 7 3.5M32 20l6.5 8-7 3.5"/>' + e;
+    case "niyet": case "kavme": return b + stand + '<path d="M32 20l-6 15M32 20l6 15"/>' + e;
+    case "ruku": return b + ground + head(12, 31) + '<path d="M44 33H18M44 33v25M46.5 33l1 25M22 33.5l21 13"/>' + e;
+    case "secde": return b + ground + head(12, 53) + '<path d="M40 41Q30 41 19.5 49M40 41l-4 16.5M35.5 57.5h16M21 49l-1.5 9M19.5 58h6"/>' + e;
+    case "celse": case "oturus": return b + ground + head(37, 17) + '<path d="M38 24l1.5 26M39.5 50L17 56M17 57.5h26M38.5 29L24 51"/>' + e;
+    case "selam": return b + ground + head(37, 17) + '<path d="M38 24l1.5 26M39.5 50L17 56M17 57.5h26M38.5 29L24 51M26 11l-4 4 4 4M48 11l4 4-4 4"/>' + e;
+  }
+  return b + stand + e;
+}
+var PH = {niyet:"Niyet", tekbir:"Tekbir", kiyam:"Kıyam", ruku:"Rükû", kavme:"Kavme", secde:"Secde", celse:"Celse", oturus:"Oturuş", selam:"Selam"};
+
+/* ---------- text rendering ---------- */
+function linesHTML(lines, o){
+  o = o || {};
+  var lastN = null;
+  return lines.map(function(l, i){
+    var hid = !!o.ezber && !(o.revealed && o.revealed[i]);
+    var okTxt = l.ok, okCls = "ok";
+    if (hid){ if (o.level === "ipucu") okTxt = hint(l.ok); else { okTxt = "Hatırlamaya çalış, sonra dokunarak bak."; okCls = "ok tap"; } }
+    var num = "";
+    if (o.numbered && l.n !== lastN){ num = '<span class="star lnum" aria-hidden="true"><span>' + l.n + "</span></span>"; }
+    lastN = l.n;
+    return '<div class="tline' + (o.numbered ? " numbered" : "") + (hid ? " hid" : "") + '" data-i="' + i + '"' + (hid ? ' role="button" tabindex="0" aria-label="Satırı göster"' : "") + ">" + num +
+      '<div class="ar" lang="ar" dir="rtl">' + esc(l.ar) + "</div>" +
+      '<div class="' + okCls + '">' + esc(okTxt) + "</div>" +
+      '<div class="tr">' + esc(l.tr) + "</div></div>";
+  }).join("");
+}
+function itemHTML(it, ctx){
+  if (it.niyet){
+    return '<div class="tcard niyet"><div class="tc-h"><b>Niyet</b></div><div class="tline"><div class="ok">' + esc(ctx.niyet) + "</div></div></div>";
+  }
+  if (it.d){
+    var d = DUA[it.d], badges = "";
+    var times = it.times || d.times;
+    if (times) badges += '<span class="chip v">' + times + " defa</span>";
+    if (it.label) badges += '<span class="chip f">' + esc(it.label) + "</span>";
+    if (it.opt) badges += '<span class="chip">isteğe bağlı</span>';
+    return '<div class="tcard"><div class="tc-h"><b>' + esc(d.name) + '</b><span class="sp"></span>' + badges + "</div>" + linesHTML(d.lines) + (d.note ? '<div class="tc-note">' + esc(d.note) + "</div>" : "") + "</div>";
+  }
+  if (it.s){
+    var s = SUR[it.s];
+    var hdr = '<div class="tc-h"><b>' + (it.zamm ? "Zamm-ı sure · " : "") + esc(s.name) + "</b>" + (s.ref ? '<span class="chip">' + esc(s.ref) + "</span>" : "") + '<span class="sp"></span>' +
+      (it.zamm ? '<button class="mini" data-act="swap">' + IC.swap + "Değiştir</button>" : "") + "</div>";
+    return '<div class="tcard">' + hdr + linesHTML(s.lines, {numbered:true}) + "</div>";
+  }
+  return "";
+}
+
+/* ---------- layers ---------- */
+var LAYERS = [];
+function openLayer(html, opts){
+  opts = opts || {};
+  var host = $("#layers"), el = document.createElement("div");
+  if (opts.sheet){
+    el.className = "sheet-wrap";
+    el.innerHTML = '<div class="sheet" role="dialog" aria-modal="true" aria-label="' + esc(opts.label || "") + '"><div class="grab"></div>' + html + "</div>";
+    el.addEventListener("click", function(ev){ if (ev.target === el) closeLayer(); });
+  } else {
+    el.className = "layer";
+    el.setAttribute("role", "dialog"); el.setAttribute("aria-modal", "true"); el.setAttribute("aria-label", opts.label || "");
+    el.innerHTML = html;
+  }
+  host.appendChild(el); LAYERS.push({el:el, onclose:opts.onclose});
+  document.body.style.overflow = "hidden";
+  var f = el.querySelector("[data-focus]") || el.querySelector("button");
+  if (f) try { f.focus({preventScroll:true}); } catch (e) {}
+  return el;
+}
+function closeLayer(){
+  var L = LAYERS.pop(); if (!L) return;
+  if (L.onclose) L.onclose();
+  L.el.remove();
+  if (!LAYERS.length) document.body.style.overflow = "";
+}
+function closeAll(){ while (LAYERS.length) closeLayer(); }
+document.addEventListener("keydown", function(ev){ if (ev.key === "Escape" && LAYERS.length) closeLayer(); });
+function topBar(title, sub, leftIcon, rightHTML){
+  return '<div class="l-top"><button class="iconbtn" data-act="close" aria-label="Geri">' + (leftIcon || IC.back) + '</button><div class="tt"><b data-focus tabindex="-1">' + esc(title) + "</b>" + (sub ? "<span>" + esc(sub) + "</span>" : "") + "</div>" + (rightHTML || '<span style="width:42px"></span>') + "</div>";
+}
+
+/* ---------- tabs & routing ---------- */
+var TABS = [["namaz","Namaz"],["ezber","Ezber"],["dualar","Dualar"],["tesbih","Tesbih"],["bilgi","Bilgi"]];
+var tab = "namaz";
+function renderTabs(){
+  $("#tabs").innerHTML = TABS.map(function(t){
+    return '<button class="tab" data-tab="' + t[0] + '"' + (tab === t[0] ? ' aria-current="page"' : "") + '><span class="tab-ic">' + IC[t[0]] + "</span>" + t[1] + "</button>";
+  }).join("");
+}
+function go(t){ setTab(t); try { if ((location.hash || "").replace("#", "") !== t) location.hash = t; } catch (e) {} }
+function setTab(t){
+  if (t === "sureler") t = "ezber";
+  if (!TABS.some(function(x){ return x[0] === t; })) t = "namaz";
+  tab = t; closeAll(); renderTabs(); render();
+  window.scrollTo(0, 0);
+}
+$("#tabs").addEventListener("click", function(ev){ var b = ev.target.closest("[data-tab]"); if (b) go(b.dataset.tab); });
+window.addEventListener("hashchange", function(){ var h = (location.hash || "").replace("#", ""); if (h && h !== tab) setTab(h); });
+
+function render(){
+  var v = $("#view");
+  v.onclick = null;
+  if (tab === "namaz") v.innerHTML = viewNamaz();
+  else if (tab === "dualar") v.innerHTML = viewDualar();
+  else if (tab === "ezber") v.innerHTML = viewEzber();
+  else if (tab === "tesbih") v.innerHTML = viewTesbih();
+  else v.innerHTML = viewBilgi();
+  if (tab === "tesbih") bindTesbih();
+}
+
+/* ---------- Namaz (ana sayfa) ---------- */
+function partChips(v){
+  return v.parts.map(function(p){
+    var c = p.tur === "farz" ? "f" : (p.tur === "vitir" ? "v" : "");
+    var w = p.tur === "farz" ? "farz" : (p.tur === "vitir" ? "vitir" : "sünnet");
+    return '<span class="chip ' + c + '">' + p.rekat + " " + w + "</span>";
+  }).join("");
+}
+function memoCount(){ return MEMO.filter(isOk).length; }
+function homeEzberCard(){
+  var m = memoCount(), pct = Math.round(m / MEMO.length * 100), due = dueItems(), nx = nextItem();
+  var line = due.length ? "Bugün tekrar edilecek: " + due.map(function(id){ return ITEM(id).name; }).join(", ") + "."
+    : (nx ? "Sıradaki: " + ITEM(nx).name + " · " + wordCount(ITEM(nx).lines) + " kelime." : "Hepsini ezberledin. Maşallah!");
+  return '<div class="sec card"><div class="sec-h" style="margin-bottom:8px"><span class="h2">Ezberin</span><span class="small" style="font-variant-numeric:tabular-nums">' + m + " / " + MEMO.length + '</span></div><div class="progress" aria-hidden="true"><i style="width:' + pct + '%"></i></div><p class="small" style="margin:10px 0 12px">' + esc(line) + '</p><button class="btn pri block" data-go="ezber">' + IC.ezber + "Ezbere devam et</button></div>";
+}
+function viewNamaz(){
+  return '<h1 class="h1">Hangi namazı kılacaksın?</h1><p class="lead">Vakti seç; niyetten selama kadar her adımı, okunacak duayı ve sureyi birlikte prova edelim.</p>' +
+    '<div class="vakitler">' + VAKIT.map(function(v){
+      return '<button class="vakit" data-vakit="' + v.id + '">' + VIC[v.id] + '<span class="ad">' + v.ad + '</span><span class="rek">' + partChips(v) + "</span></button>";
+    }).join("") + "</div>" +
+    homeEzberCard() +
+    '<div class="sec note">' + IC.info + '<div><b>Önce prova, sonra namaz.</b> Hanefî mezhebinde namaz kılarken Mushaf\'a ya da yazıya bakarak okumak İmam Ebû Hanîfe\'ye göre namazı bozar, İmâmeyn\'e göre mekruhtur. Rehberi namazdan önce çalışmak için kullan. <button class="mini" data-go="bilgi" style="margin-top:8px">Ayrıntılar</button></div></div>';
+}
+function openVakit(vid){
+  var v = VAKIT.filter(function(x){ return x.id === vid; })[0];
+  var html = '<h2 class="h2" style="margin-bottom:4px">' + v.ad + ' namazı</h2><p class="small" style="margin:0 0 12px">Prova etmek istediğin bölümü seç.</p><div class="list">' +
+    v.parts.map(function(p){
+      return '<button class="row" data-part="' + p.id + '">' + star(p.rekat, p.tur === "farz" ? "fill" : "") + '<span class="t"><b>' + p.ad + "</b><span>" + p.rekat + " rekât · " + C.TUR_AD[p.tur] + "</span></span>" + IC.chev + "</button>";
+    }).join("") + "</div>" +
+    (vid === "cuma" ? '<p class="small" style="margin:12px 2px 0">Cuma namazının farzı hutbeden sonra cemaatle kılınır; tek başına kılınmaz.</p>' : "");
+  var el = openLayer(html, {sheet:true, label:v.ad + " namazı"});
+  el.addEventListener("click", function(ev){
+    var b = ev.target.closest("[data-part]"); if (!b) return;
+    closeLayer(); openPrep(v, v.parts.filter(function(p){ return p.id === b.dataset.part; })[0]);
+  });
+}
+
+/* ---------- Hazırlık ---------- */
+function openPrep(v, p, keep){
+  var sp = smartPlan(p);
+  var st = keep || {cemaat:!!p.cemaatOnly, plan:sp || C.defaultPlan(p, S.zammStart), smart:!!sp};
+  var el = openLayer(
+    topBar(v.ad + " · " + p.ad, p.rekat + " rekât · " + C.TUR_AD[p.tur]) +
+    '<div class="l-body"><div class="l-in" id="prep-in"></div></div>' +
+    '<div class="l-foot"><div class="l-foot-in one"><button class="btn pri block" data-act="start">' + IC.play + "Adım adım başla</button></div></div>",
+    {label:"Hazırlık"});
+  function draw(){
+    var cem = C.isCemaat(p, st);
+    var h = '<div class="tcard niyet"><div class="tc-h"><b>Niyet</b></div><div class="tline"><div class="ok">' + esc(C.niyetText(p, cem)) + "</div></div></div>";
+    if (p.tur === "farz"){
+      h += '<div class="sec list"><div class="field"><label for="cem-sw">Cemaatle kılıyorum<span>' + (p.cemaatOnly ? "Cuma namazının farzı yalnız cemaatle kılınır." : "İmama uyarsan Fâtiha ve sure okunmaz, imam dinlenir.") + '</span></label><span class="switch"><input type="checkbox" id="cem-sw"' + (cem ? " checked" : "") + (p.cemaatOnly ? " disabled" : "") + "><i></i></span></div></div>";
+    }
+    if (!cem){
+      var rs = C.zammRekats(p), checks = C.checkPlan(p, st.plan);
+      h += '<div class="sec"><div class="sec-h"><span class="h2">Zamm-ı sureler</span></div><div class="list">';
+      rs.forEach(function(r){
+        h += '<div class="field"><label for="z' + r + '">' + r + ". rekât<span>Fâtiha'dan sonra</span></label>" + surahSelect("z" + r, st.plan[r-1], r) + "</div>";
+        checks.forEach(function(c){
+          if (c.pair[1] === r && c.msg){
+            h += '<div class="verdict ' + (c.lvl === "warn" ? "warn" : "ok") + '">' + (c.lvl === "warn" ? IC.warn : (c.lvl === "info" ? IC.info : IC.ok)) + "<span>" + esc(c.msg) + "</span></div>";
+          }
+        });
+      });
+      h += "</div>";
+      h += st.smart ? '<p class="small" style="margin:8px 2px 0;color:var(--accent);font-weight:700">✓ Ezberlediğin surelerden, sırası uygun olacak şekilde seçildi.</p>'
+        : '<p class="small" style="margin:8px 2px 0">İpucu: Ezber bölümünde Asr, Kevser ve İhlâs\'ı ezberlersen rehber sana onları önerir.</p>';
+      if (p.tur === "farz") h += '<p class="small" style="margin:8px 2px 0">Farzın 3. ve 4. rekâtlarında Fâtiha\'dan sonra sure okunmaz.</p>';
+      if (p.rekat === 4 && p.tur !== "farz") h += '<p class="small" style="margin:8px 2px 0">Dört rekâtlı sünnette her iki rekât ayrı sayılır; 3. ve 4. rekâtta ilk ikidekileri tekrar okumak da olur.</p>';
+      h += "</div>";
+    }
+    h += '<div class="sec"><div class="sec-h"><span class="h2">Kılınış özeti</span></div><div class="card flow">' + summaryHTML(p, st) + "</div></div>";
+    h += '<div class="sec note">' + IC.info + "<div>Bu adımları namazdan önce prova et. Namaz içinde ekrana bakarak okumak Hanefî mezhebinde namazı bozabilir.</div></div>";
+    $("#prep-in", el).innerHTML = h;
+  }
+  draw();
+  el.addEventListener("click", function(ev){
+    var a = ev.target.closest("[data-act]"); if (!a) return;
+    if (a.dataset.act === "close") closeLayer();
+    if (a.dataset.act === "start") openGuide(v, p, {cemaat:st.cemaat, plan:st.plan.slice()});
+  });
+  el.addEventListener("change", function(ev){
+    var t = ev.target;
+    if (t.id === "cem-sw"){ st.cemaat = t.checked; draw(); }
+    else if (t.dataset.rekat){ st.plan[+t.dataset.rekat - 1] = t.value; draw(); var f = $("#" + t.id, el); if (f) f.focus(); }
+  });
+}
+function smartPlan(p){
+  var mem = ZAMM.filter(function(z){ return isOk(z.id); }).map(function(z){ return z.id; });
+  if (!mem.length) return null;
+  var plan = []; for (var r = 0; r < p.rekat; r++) plan.push(null);
+  function seq(k, avoid){
+    var best = null;
+    (function rec(start, cur){
+      if (best) return;
+      if (cur.length === k){ if (!avoid || cur.join() !== avoid.join()) best = cur.slice(); return; }
+      for (var i = start; i < mem.length && !best; i++){
+        var nxt = cur.concat([mem[i]]);
+        if (nxt.length > 1 && C.checkPair(p, nxt[nxt.length - 2], nxt[nxt.length - 1]).lvl === "warn") continue;
+        rec(i + 1, nxt);
+      }
+    })(0, []);
+    return best;
+  }
+  if (p.tur === "vitir"){ var t3 = seq(3); if (!t3) return null; plan[0] = t3[0]; plan[1] = t3[1]; plan[2] = t3[2]; return plan; }
+  var a = seq(2);
+  if (!a){ if (p.tur !== "farz") a = [mem[0], mem[0]]; else return null; }
+  plan[0] = a[0]; plan[1] = a[1];
+  if (p.rekat === 4 && p.tur !== "farz"){ var b = seq(2, a) || a; plan[2] = b[0]; plan[3] = b[1]; }
+  return plan;
+}
+function surahSelect(id, val, rekat){
+  var ay = ZAMM.filter(function(z){ return z.kind === "ayet"; }), su = ZAMM.filter(function(z){ return z.kind === "sure"; });
+  function opt(z){ return '<option value="' + z.id + '"' + (z.id === val ? " selected" : "") + ">" + esc(z.name) + (z.kind === "sure" ? " (" + z.ayat + " âyet)" : "") + (isOk(z.id) ? " ✓" : "") + "</option>"; }
+  return '<select class="sel" id="' + id + '" data-rekat="' + rekat + '"><optgroup label="Âyetler">' + ay.map(opt).join("") + '</optgroup><optgroup label="Sureler">' + su.map(opt).join("") + "</optgroup></select>";
+}
+function summaryHTML(p, st){
+  var steps = C.buildSteps(p, {cemaat:st.cemaat, plan:st.plan, gender:S.gender});
+  var by = {};
+  steps.forEach(function(s){
+    (by[s.r] = by[s.r] || []);
+    var name = s.title;
+    if (s.zamm) name = SUR[s.say[0].s].name;
+    if (["Rükû","Rükûdan doğrulma","1. secde","İki secde arası","2. secde"].indexOf(s.title) > -1) return;
+    by[s.r].push(name);
+  });
+  var out = "";
+  for (var r = 1; r <= p.rekat; r++){
+    var list = by[r].slice(); var i = list.indexOf("Niyet"); if (i > -1) list.splice(i, 1);
+    var mid = list.findIndex ? list.findIndex(function(x){ return /oturuş|Selam|Salli|Rabbenâ/.test(x); }) : -1;
+    if (mid < 0) mid = list.length;
+    list.splice(mid, 0, "rükû ve iki secde");
+    out += '<div class="fr">' + star(r) + "<p><b>" + r + ". rekât:</b> " + esc(list.join(" → ")) + "</p></div>";
+  }
+  return out;
+}
+
+/* ---------- Rehber ---------- */
+var G = null, wake = null;
+function keepAwake(on){
+  try {
+    if (on && navigator.wakeLock && !wake) navigator.wakeLock.request("screen").then(function(w){ wake = w; }).catch(function(){});
+    if (!on && wake){ wake.release().catch(function(){}); wake = null; }
+  } catch (e) {}
+}
+function openGuide(v, p, o, startIdx){
+  var steps = C.buildSteps(p, {cemaat:o.cemaat, plan:o.plan, gender:S.gender});
+  G = {v:v, p:p, o:o, steps:steps, i:startIdx || 0, cem:C.isCemaat(p, o), dir:1};
+  var el = G.el = openLayer(
+    topBar(v.ad + " · " + p.ad, "", IC.close, '<button class="iconbtn" data-act="help" aria-label="Yanılırsam ne yaparım?">' + IC.help + "</button>") +
+    '<div id="g-track"></div><div class="l-body" id="g-body"><div class="l-in" id="g-in"></div></div>' +
+    '<div class="l-foot"><div class="l-foot-in" id="g-foot"></div></div>',
+    {label:"Namaz rehberi", onclose:function(){ G = null; keepAwake(false); }});
+  keepAwake(true);
+  drawGuide();
+  el.addEventListener("click", function(ev){
+    var a = ev.target.closest("[data-act]"); if (!a) return;
+    var act = a.dataset.act;
+    if (act === "close") closeLayer();
+    else if (act === "next") step(1);
+    else if (act === "prev") step(-1);
+    else if (act === "help") openHelp();
+    else if (act === "swap") openSwap();
+    else if (act === "restart"){ G.i = 0; G.dir = -1; drawGuide(); }
+    else if (act === "nextpart"){ var np = nextPart(); closeLayer(); closeLayer(); openPrep(G2.v, np); }
+    else if (act === "tesbihat"){ closeAll(); go("tesbih"); }
+  });
+  var sx = null, sy = null;
+  var body = $("#g-body", el);
+  body.addEventListener("touchstart", function(ev){ var t = ev.touches[0]; sx = t.clientX; sy = t.clientY; }, {passive:true});
+  body.addEventListener("touchend", function(ev){
+    if (sx == null) return; var t = ev.changedTouches[0], dx = t.clientX - sx, dy = t.clientY - sy; sx = null;
+    if (Math.abs(dx) > 70 && Math.abs(dx) > Math.abs(dy) * 1.6) step(dx < 0 ? 1 : -1);
+  }, {passive:true});
+}
+var G2 = null;
+function nextPart(){
+  var parts = G.v.parts, k = parts.indexOf(G.p);
+  G2 = {v:G.v};
+  return k > -1 && k < parts.length - 1 ? parts[k + 1] : null;
+}
+function step(d){
+  if (!G) return;
+  var n = G.i + d;
+  if (n < 0 || n > G.steps.length) return;
+  G.i = n; G.dir = d; drawGuide();
+  vib(8);
+}
+document.addEventListener("keydown", function(ev){
+  if (!G || (LAYERS.length && LAYERS[LAYERS.length-1].el.className.indexOf("sheet") > -1)) return;
+  if (ev.key === "ArrowRight") step(1); else if (ev.key === "ArrowLeft") step(-1);
+});
+function drawGuide(){
+  if (!G || !G.el) return;
+  var root = G.el;
+  var N = G.p.rekat, total = G.steps.length, done = G.i >= total;
+  var cur = done ? N + 1 : G.steps[G.i].r;
+  var tr = '<div class="rtrack" aria-label="Rekâtlar">';
+  for (var r = 1; r <= N; r++){
+    var cls = r < cur ? "done" : (r === cur ? "cur" : "");
+    tr += '<div class="rk ' + cls + '">' + '<span class="star' + (r <= cur ? " fill" : "") + '"><span>' + r + "</span></span>" + "</div>";
+  }
+  tr += '</div><div class="gbar" aria-hidden="true"><i style="width:' + Math.round(Math.min(G.i, total) / total * 100) + '%"></i></div>';
+  $("#g-track", root).innerHTML = tr;
+  var sub = $(".l-top .tt span", root);
+  if (!sub){ sub = document.createElement("span"); $(".l-top .tt", root).appendChild(sub); }
+  sub.textContent = done ? "Tamamlandı" : (cur + ". rekât · adım " + (G.i + 1) + " / " + total);
+  var inner = $("#g-in", root), foot = $("#g-foot", root);
+  if (done){
+    var np = nextPart();
+    inner.innerHTML = '<div class="endbox"><div class="star bigstar" aria-hidden="true"><span></span></div><h2 class="h1">Allah kabul etsin</h2><p class="lead">' + esc(G.v.ad + " · " + G.p.ad) + " provası bitti. " + (np ? "Sıradaki bölüm: " + esc(np.ad) + "." : "Şimdi tesbihata geçebilirsin.") + "</p></div>" +
+      '<div class="stack" style="margin-top:18px">' + (np ? '<button class="btn pri block" data-act="nextpart">' + IC.next + esc(np.ad) + " (" + np.rekat + " rekât)</button>" : "") +
+      '<button class="btn block' + (np ? "" : " pri") + '" data-act="tesbihat">' + IC.tesbih + "Tesbihata geç</button>" +
+      '<button class="btn block" data-act="restart">' + IC.reset + "Baştan prova et</button></div>" +
+      '<div class="sec note">' + IC.info + "<div>Bir vacibi unuttuysan namazın sonunda sehiv secdesi yapılır. Nasıl yapıldığını sağ üstteki soru işaretinde bulabilirsin.</div></div>";
+    foot.className = "l-foot-in one";
+    foot.innerHTML = '<button class="btn block" data-act="prev">' + IC.back + "Son adıma dön</button>";
+    animIn(inner);
+    return;
+  }
+  var s = G.steps[G.i];
+  var ctx = {niyet:C.niyetText(G.p, G.cem)};
+  animIn(inner);
+  inner.innerHTML = '<div class="stephead"><div class="figbox">' + fig(s.ph) + '</div><div><div class="phase">' + (PH[s.ph].toLocaleLowerCase("tr") === s.title.toLocaleLowerCase("tr") ? "&nbsp;" : PH[s.ph]) + '</div><h2 class="steptitle">' + esc(s.title) + '</h2><p class="act">' + esc(s.act) + "</p></div></div>" +
+    '<div class="gitems">' + s.say.map(function(it){ return itemHTML(it, ctx); }).join("") + "</div>";
+  foot.className = "l-foot-in";
+  foot.innerHTML = '<button class="btn" data-act="prev"' + (G.i === 0 ? " disabled" : "") + ">" + IC.back + 'Geri</button><button class="btn pri" data-act="next">' + (G.i === total - 1 ? "Bitir" : "İleri") + IC.next + "</button>";
+  $("#g-body", root).scrollTop = 0;
+}
+function animIn(el){ el.className = "l-in"; void el.offsetWidth; el.className = "l-in " + (G && G.dir < 0 ? "anim-p" : "anim-n"); }
+function openSwap(){
+  if (!G) return;
+  var s = G.steps[G.i], r = s.r;
+  var html = '<h2 class="h2" style="margin-bottom:10px">' + r + '. rekâtta okunacak</h2><div class="list">' +
+    ZAMM.map(function(z){
+      return '<button class="row" data-z="' + z.id + '">' + star(z.kind === "sure" ? z.no : "", z.id === s.say[0].s ? "fill" : "") + '<span class="t"><b>' + esc(z.name) + "</b><span>" + (z.kind === "sure" ? z.ayat + " âyet" : esc(z.ref)) + (isOk(z.id) ? " · ✓ ezberlendi" : "") + "</span></span></button>";
+    }).join("") + "</div>";
+  var el = openLayer(html, {sheet:true, label:"Sure seç"});
+  el.addEventListener("click", function(ev){
+    var b = ev.target.closest("[data-z]"); if (!b) return;
+    G.o.plan[r - 1] = b.dataset.z;
+    var keep = G.i;
+    G.steps = C.buildSteps(G.p, {cemaat:G.o.cemaat, plan:G.o.plan, gender:S.gender});
+    G.i = keep; G.dir = 1;
+    closeLayer(); drawGuide();
+    var warn = C.checkPlan(G.p, G.o.plan).filter(function(c){ return c.lvl === "warn" && (c.pair[0] === r || c.pair[1] === r); })[0];
+    if (warn) toast(warn.msg.split(".")[0] + ".");
+  });
+}
+function openHelp(){
+  openLayer('<h2 class="h2" style="margin-bottom:8px">Yanılırsan: sehiv secdesi</h2>' + sehivHTML(), {sheet:true, label:"Sehiv secdesi"});
+}
+function sehivHTML(){
+  return '<div class="acc-b" style="padding:0"><p>Namazın bir vacibini unutursan (ilk oturuşu, Fâtiha\'yı, zamm-ı sureyi ya da vitirde kunutu atlamak gibi) namaz bozulmaz; sonunda sehiv secdesi yapılır:</p><ol>' +
+    "<li>Son oturuşta yalnız Ettehiyyâtü'yü oku.</li><li>Sadece sağa selam ver.</li><li>“Allâhü ekber” diyerek iki secde yap; her birinde üç kez “Sübhâne rabbiyel a'lâ” de.</li><li>Oturup Ettehiyyâtü, Salli, Bârik ve Rabbenâ dualarını oku.</li><li>Sağa ve sola selam vererek bitir.</li></ol>" +
+    "<p>Bir farzı (örneğin bir secdeyi) yapmazsan ya da bir vacibi bilerek terk edersen sehiv secdesi yetmez; namazı yeniden kılarsın.</p></div>";
+}
+
+/* ---------- Okuma / ezber ---------- */
+function openReader(kind, id){
+  var obj = kind === "s" ? SUR[id] : DUA[id];
+  var memoable = MEMO.indexOf(id) > -1;
+  var R = {ezber:false, level:"ipucu", revealed:{}};
+  var sub = kind === "s" ? (obj.kind === "sure" ? obj.no + ". sure · " + obj.ayat + " âyet" : obj.ref) : obj.where;
+  var el = openLayer(
+    topBar(obj.name, sub) +
+    '<div class="l-body"><div class="l-in"><div id="rd-ctl"></div><div id="rd-txt" style="margin-top:12px"></div></div></div>' +
+    (memoable ? '<div class="l-foot"><div class="l-foot-in one" id="rd-foot"></div></div>' : ""),
+    {label:obj.name});
+  function draw(){
+    var c = '<div class="toggles" role="group" aria-label="Gösterilecekler">' +
+      tgl("ar", "Arapça") + tgl("ok", "Okunuş") + tgl("tr", "Anlam") +
+      '<button class="tg" data-act="ezber" aria-pressed="' + R.ezber + '">Ezber modu</button></div>';
+    if (R.ezber){
+      c += '<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:10px"><div class="seg" role="group" aria-label="Ezber seviyesi"><button data-lv="ipucu" aria-pressed="' + (R.level === "ipucu") + '">İlk harfler</button><button data-lv="gizli" aria-pressed="' + (R.level === "gizli") + '">Tamamen gizli</button></div><button class="mini" data-act="reveal">Hepsini göster</button><button class="mini" data-act="hide">Hepsini gizle</button></div>' +
+        '<p class="small" style="margin:8px 2px 0">Anlamına bakarak satırı içinden söyle, sonra dokunup kontrol et.</p>';
+    }
+    $("#rd-ctl", el).innerHTML = c;
+    var lines = obj.lines;
+    $("#rd-txt", el).innerHTML = '<div class="tcard">' + linesHTML(lines, {numbered:kind === "s", ezber:R.ezber, level:R.level, revealed:R.revealed}) + "</div>" +
+      (obj.note ? '<p class="small" style="margin:10px 2px 0">' + esc(obj.note) + "</p>" : "") +
+      (kind === "s" ? '<p class="small" style="margin:10px 2px 0">Arapça metin: Tanzil Projesi. Anlamlar kısa açıklamadır, meal yerine geçmez.</p>' : "");
+    if (memoable){
+      var on = isOk(id);
+      $("#rd-foot", el).innerHTML = '<button class="btn block' + (on ? "" : " pri") + '" data-act="memo">' + (on ? IC.check + "Ezberledim · işareti kaldır" : IC.check + "Ezberledim olarak işaretle") + "</button>";
+    }
+  }
+  function tgl(k, label){ return '<button class="tg" data-show="' + k + '" aria-pressed="' + S.show[k] + '">' + label + "</button>"; }
+  draw();
+  el.addEventListener("click", function(ev){
+    var a = ev.target.closest("[data-act],[data-show],[data-lv],.tline.hid"); if (!a) return;
+    if (a.classList.contains("tline")){ R.revealed[+a.dataset.i] = true; draw(); return; }
+    if (a.dataset.show){ var k = a.dataset.show; S.show[k] = !S.show[k]; if (!S.show.ar && !S.show.ok && !S.show.tr) S.show.ok = true; save(); applyPrefs(); draw(); return; }
+    if (a.dataset.lv){ R.level = a.dataset.lv; R.revealed = {}; draw(); return; }
+    var act = a.dataset.act;
+    if (act === "close") closeLayer();
+    else if (act === "ezber"){ R.ezber = !R.ezber; R.revealed = {}; draw(); }
+    else if (act === "reveal"){ obj.lines.forEach(function(_, i){ R.revealed[i] = true; }); draw(); }
+    else if (act === "hide"){ R.revealed = {}; draw(); }
+    else if (act === "memo"){ if (isOk(id)) unmark(id); else { markOk(id); toast("Maşallah! " + obj.name + " ezber listende."); } draw(); render(); }
+  });
+  el.addEventListener("keydown", function(ev){
+    var t = ev.target; if ((ev.key === "Enter" || ev.key === " ") && t.classList && t.classList.contains("hid")){ ev.preventDefault(); R.revealed[+t.dataset.i] = true; draw(); }
+  });
+}
+
+/* ---------- Dualar ---------- */
+var DUA_GROUPS = [
+  ["Namaza başlarken", ["tekbir","subhaneke","euzu","besmele","s:fatiha","amin"]],
+  ["Rükû ve secdede", ["ruku","semiallah","lekelhamd","secde","celse"]],
+  ["Oturuşta", ["tahiyyat","salli","barik","atina","agfirli"]],
+  ["Selam ve sonrası", ["selam","selamduasi"]],
+  ["Vitir namazında", ["kunut1","kunut2"]],
+  ["Tesbihat", ["salavat","tesbihgiris","subhanallah","elhamdulillah","allahuekber","tehlil","duasonu"]]
+];
+function duaRow(id){
+  if (id.indexOf("s:") === 0) return surRow(SUR[id.slice(2)]);
+  var d = DUA[id];
+  return '<button class="row" data-dua="' + id + '"><span class="t"><b>' + esc(d.name) + "</b><span>" + esc(d.where) + '</span><span class="arp" lang="ar" dir="rtl">' + esc(d.lines[0].ar) + "</span></span>" + (isOk(id) ? '<span class="done" aria-label="Ezberlendi">' + IC.check + "</span>" : "") + IC.chev + "</button>";
+}
+function viewDualar(){
+  return '<h1 class="h1">Dualar</h1><p class="lead">Namazda okunan bütün dualar, okundukları yere göre sıralı. Her birinde Arapçası, okunuşu ve anlamı var.</p>' +
+    DUA_GROUPS.map(function(g){
+      return '<div class="sec"><div class="sec-h"><span class="eyebrow">' + g[0] + '</span></div><div class="list">' + g[1].map(duaRow).join("") + "</div></div>";
+    }).join("");
+}
+
+/* ---------- Sureler ---------- */
+function surRow(s){
+  var sub = s.kind === "sure" ? s.ayat + " âyet" : s.ref;
+  return '<button class="row" data-sure="' + s.id + '">' + star(s.kind === "sure" ? s.no : "") + '<span class="t"><b>' + esc(s.name) + "</b><span>" + esc(sub) + '</span><span class="arp" lang="ar" dir="rtl">' + esc(s.lines[0].ar) + "</span></span>" + (isOk(s.id) ? '<span class="done" aria-label="Ezberlendi">' + IC.check + "</span>" : "") + IC.chev + "</button>";
+}
+/* ---------- Ezber ---------- */
+function isSure(it){ return it.kind === "s" && it.obj.kind === "sure"; }
+function ezMeta(it){ var n = wordCount(it.lines); return (isSure(it) ? it.obj.ayat + " âyet" : (it.kind === "s" ? it.obj.ref : it.lines.length + " satır")) + " · " + n + " kelime · " + level(n); }
+function ezRow(id, idx){
+  var it = ITEM(id), ok = isOk(id), due = isDue(id);
+  var st = ok ? (due ? '<span class="st due">Tekrar zamanı</span>' : '<span class="st ok">' + esc(dueText(id)) + "</span>") : (S.ezp[id] ? '<span class="st cal">Yarım kaldı</span>' : "");
+  return '<button class="row" data-ez="' + id + '">' + (ok ? '<span class="star okstar" aria-hidden="true"><span>✓</span></span>' : star(idx)) + '<span class="t"><b>' + esc(it.name) + "</b><span>" + esc(ezMeta(it)) + "</span></span>" + st + IC.chev + "</button>";
+}
+function tipsHTML(){
+  var tips = [
+    ["Küçük parçalarla", "Her gün bir sure yeter. Uzun surelerde günde birkaç âyet."],
+    ["Önce anlamı", "Âyetin ne dediğini bilmek kelimeleri yerine oturtur."],
+    ["Sesli ve yavaş", "Her âyeti en az 5 kez yüksek sesle oku; kulağın da ezberler."],
+    ["Bakmadan söyle, sonra kontrol et", "Hatırlamaya çalışmak, sadece tekrar okumaktan daha kalıcıdır."],
+    ["Zincirle", "Yeni âyeti eklerken her seferinde baştan oku."],
+    ["Hafızdan dinle", "Doğru telaffuz için bir hafızın okuyuşunu dinle, onunla birlikte oku."],
+    ["Zamanında tekrar et", "Ertesi gün, 3 gün, 1 hafta, 2 hafta ve 1 ay sonra tekrar et; uygulama sana söyler."],
+    ["Namazda kullan", "Yeni ezberlediğin sureyi önce sünnetlerde oku. Namaz rehberi de ezberlediğin surelerden plan yapar."],
+    ["En verimli anlar", "Sabah namazından sonra ve yatmadan önce."]
+  ];
+  return '<div class="methods">' + tips.map(function(t, i){ return '<div class="fr">' + star(i + 1) + "<p><b>" + esc(t[0]) + ".</b> " + esc(t[1]) + "</p></div>"; }).join("") + "</div>";
+}
+function viewEzber(){
+  var due = dueItems(), nx = nextItem();
+  var h = '<h1 class="h1">Ezber</h1><p class="lead">En kısadan başla. Her gün küçük bir parça: sesli oku, bakmadan söyle, zamanında tekrar et.</p>';
+  h += '<div class="sec card today">';
+  if (due.length){
+    h += '<span class="eyebrow">Bugün tekrar et</span><div class="duelist">' + due.map(function(id){ return '<button class="btn block" data-rev="' + id + '">' + IC.reset + "Tekrar et: " + esc(ITEM(id).name) + "</button>"; }).join("") + "</div>";
+  }
+  if (nx){
+    var it = ITEM(nx);
+    h += '<span class="eyebrow">' + (S.ezp[nx] ? "Kaldığın yer" : "Sıradaki ezber") + '</span><div class="big">' + esc(it.name) + '</div><p class="small" style="margin:-6px 0 0">' + esc(ezMeta(it)) + '</p><button class="btn pri block" data-ez="' + nx + '">' + IC.play + (S.ezp[nx] ? "Kaldığın yerden devam et" : "Ezberlemeye başla") + "</button>";
+  } else {
+    h += '<div class="big">Hepsini ezberledin. Maşallah!</div><p class="small" style="margin:0">Tekrar zamanı gelenler burada görünür.</p>';
+  }
+  h += "</div>";
+  var g0 = PATH[0];
+  h += '<div class="sec card"><div class="sec-h" style="margin-bottom:6px"><span class="h2">İlk hedefin</span><span class="small">' + g0.items.filter(isOk).length + ' / 3</span></div><p class="small" style="margin:0 0 12px">' + esc(g0.note) + '</p><div class="gold3">' +
+    g0.items.map(function(id){ var it = ITEM(id); return '<button class="' + (isOk(id) ? "ok" : "") + '" data-ez="' + id + '">' + (isOk(id) ? "✓ " : "") + esc(it.name) + "<span>" + it.obj.ayat + " âyet · " + wordCount(it.lines) + " kelime</span></button>"; }).join("") + "</div></div>";
+  var k = 0;
+  PATH.forEach(function(g, gi){
+    h += '<div class="sec"><div class="sec-h"><span class="eyebrow">' + (gi + 1) + ". " + esc(g.t) + '</span><span class="small">' + g.items.filter(isOk).length + " / " + g.items.length + '</span></div><div class="list">' + g.items.map(function(id){ k++; return ezRow(id, k); }).join("") + "</div></div>";
+  });
+  h += '<div class="sec">' + acc("", "Ezber taktikleri", tipsHTML(), false) + "</div>";
+  return h;
+}
+
+var W = null;
+function listenURL(it){
+  if (it.kind !== "s") return "";
+  if (it.obj.kind === "sure") return "https://quran.com/tr/" + it.obj.no;
+  return it.id === "ayetelkursi" ? "https://quran.com/tr/2/255" : "https://quran.com/tr/2/285-286";
+}
+function gameTokens(ok){ return ok.split(/\s+/).map(function(w){ return w.replace(/[.,;:!?“”"]/g, ""); }).filter(Boolean); }
+function buildEzCards(lines){
+  var c = [{t:"intro"}];
+  lines.forEach(function(l, i){ c.push({t:"oku", i:i}, {t:"ipucu", i:i}, {t:"gizli", i:i}); if (i > 0) c.push({t:"zincir", i:i}); });
+  lines.forEach(function(l, i){ if (gameTokens(l.ok).length >= 3) c.push({t:"oyun", i:i}); });
+  c.push({t:"tam"}, {t:"bitti"});
+  return c;
+}
+function openWorkshop(id){
+  var it = ITEM(id);
+  W = {id:id, it:it, cards:buildEzCards(it.lines), k:0, cnt:0, shown:false, game:null, dir:1};
+  var el = W.el = openLayer(topBar(it.name, "Ezber", IC.close) + '<div id="w-track"></div><div class="l-body"><div class="l-in" id="w-in"></div></div><div class="l-foot"><div class="l-foot-in" id="w-foot"></div></div>',
+    {label:it.name + " ezberi", onclose:function(){ W = null; render(); }});
+  drawW();
+  el.addEventListener("click", function(ev){
+    var b = ev.target.closest("button"); if (!b || !W) return;
+    var a = b.dataset.act;
+    if (a === "close") return closeLayer();
+    if (a === "start"){ W.k = 1; return goW(1); }
+    if (a === "resume"){ W.k = Math.max(1, Math.min(S.ezp[W.id] || 1, W.cards.length - 2)); return goW(1); }
+    if (a === "read") return openReader(it.kind, id);
+    if (a === "prev"){ W.k = Math.max(0, W.k - 1); return goW(-1); }
+    if (a === "count"){ W.cnt++; vib(10); if (W.cnt >= cardNeed()){ W.k++; return goW(1); } return drawFoot(); }
+    if (a === "skip" || a === "next"){ W.k++; return goW(1); }
+    if (a === "show"){ W.shown = true; drawW(true); return; }
+    if (a === "again"){
+      var ci = W.cards[W.k].i, j = -1;
+      for (var q = 0; q < W.cards.length; q++){ if (W.cards[q].t === "oku" && W.cards[q].i === ci){ j = q; break; } }
+      if (j > -1) W.k = j; return goW(-1);
+    }
+    if (a === "word") return pickWord(b);
+    if (a === "nextez"){ var nx = W.nextId; closeLayer(); if (nx) openWorkshop(nx); return; }
+    if (a === "finish") return closeLayer();
+  });
+}
+function cardNeed(){ var c = W.cards[W.k]; return c.t === "oku" ? 5 : (c.t === "tam" ? 3 : 0); }
+function goW(dir){
+  W.cnt = 0; W.shown = false; W.game = null; W.dir = dir || 1;
+  if (W.k > 0 && W.k < W.cards.length - 1){ S.ezp[W.id] = W.k; save(); }
+  drawW();
+}
+function animIn2(el){ el.className = "l-in"; void el.offsetWidth; el.className = "l-in " + (W && W.dir < 0 ? "anim-p" : "anim-n"); }
+function drawW(keepAnim){
+  if (!W) return;
+  var c = W.cards[W.k], it = W.it, L = it.lines, total = W.cards.length, root = W.el;
+  var su = isSure(it);
+  function tag(i){ return (i + 1) + (su ? ". âyet" : ". satır"); }
+  function head(step, t, help){ return '<div class="wk-step">' + esc(step) + " · " + esc(t) + '</div><p class="wk-help" style="margin-top:6px">' + esc(help) + "</p>"; }
+  $("#w-track", root).innerHTML = '<div class="gbar" aria-hidden="true" style="margin-top:0"><i style="width:' + Math.round(W.k / (total - 1) * 100) + '%"></i></div>';
+  var sub = $(".l-top .tt span", root); if (sub) sub.textContent = W.k === 0 ? "Ezber" : (c.t === "bitti" ? "Tamamlandı" : "Adım " + W.k + " / " + (total - 2));
+  var h = "";
+  if (c.t === "intro"){
+    var url = listenURL(it);
+    h = '<div class="wk-step">' + esc(ezMeta(it)) + '</div><h2 class="wk-title">' + esc(it.name) + ' ezberi</h2><p class="wk-help">Her satırı dört adımda çalışacağız. Sesli oku, acele etme.</p>' +
+      '<div class="card methods">' + [["Oku", "Satırı anlamıyla birlikte 5 kez yüksek sesle oku."], ["İpucuyla söyle", "Sadece ilk harflere bakarak söyle, sonra kontrol et."], ["Bakmadan söyle", "Yalnız anlamını görerek söyle."], ["Zincirle", "Baştan o satıra kadar hepsini art arda bakmadan söyle."]].map(function(x, i){ return '<div class="fr">' + star(i + 1) + "<p><b>" + x[0] + ".</b> " + x[1] + "</p></div>"; }).join("") + "</div>" +
+      '<p class="small" style="margin:0 2px 12px">Sonunda kelime dizme oyunu ve tam tekrar var. Bitirince ezber listene eklenir; tekrar zamanlarını uygulama hatırlatır.</p>' +
+      (url ? '<a class="btn block" href="' + url + '" target="_blank" rel="noopener">' + IC.ear + "Önce bir hafızdan dinle (quran.com)</a>" : "") +
+      '<button class="btn block" data-act="read" style="margin-top:10px">' + IC.sureler + "Bütün metni oku</button>";
+  } else if (c.t === "oku"){
+    h = head("1 · Oku", tag(c.i), "Anlamına bak ve satırı 5 kez yüksek sesle oku. Her okuyuşta alttaki butona dokun.") + '<div class="tcard">' + linesHTML([L[c.i]]) + "</div>";
+  } else if (c.t === "ipucu"){
+    h = head("2 · İpucuyla söyle", tag(c.i), "İlk harflere bakarak satırı söyle. Sonra “Göster” ile kontrol et.") +
+      (W.shown ? '<div class="tcard">' + linesHTML([L[c.i]]) + "</div>" : '<div class="hintbox"><div class="cue">İpucu</div><div class="hint">' + esc(hint(L[c.i].ok)) + '</div><div class="tr">' + esc(L[c.i].tr) + "</div></div>");
+  } else if (c.t === "gizli"){
+    h = head("3 · Bakmadan söyle", tag(c.i), "Sadece anlamını görüyorsun. Satırı ezberden söyle, sonra kontrol et.") +
+      (W.shown ? '<div class="tcard">' + linesHTML([L[c.i]]) + "</div>" : '<div class="hintbox"><div class="cue">Anlamı</div><div class="tr" style="font-size:calc(var(--lat) + 2px);color:var(--ink)">' + esc(L[c.i].tr) + "</div></div>");
+  } else if (c.t === "zincir"){
+    var upto = L.slice(0, c.i + 1);
+    h = head("4 · Zincirle", "1–" + (c.i + 1) + (su ? ". âyetler" : ". satırlar"), "Baştan buraya kadar hepsini art arda, bakmadan söyle.") +
+      (W.shown ? '<div class="tcard">' + linesHTML(upto, {numbered:it.kind === "s"}) + "</div>" : '<div class="hintbox"><div class="cue">Sırayla anlamları</div>' + upto.map(function(l, i){ return '<div class="tr">' + (i + 1) + ". " + esc(l.tr) + "</div>"; }).join("") + "</div>");
+  } else if (c.t === "oyun"){
+    if (!W.game) W.game = newGame(L[c.i].ok);
+    var g = W.game;
+    h = head("Oyun · Kelime dizme", tag(c.i), "Kelimelere doğru sırayla dokun.") +
+      '<div class="tr" style="margin-bottom:10px">' + esc(L[c.i].tr) + "</div>" +
+      '<div class="answer' + (g.done ? " done" : "") + '" aria-live="polite">' + g.picked.map(function(t){ return '<span class="wchip got">' + esc(t) + "</span>"; }).join("") + "</div>" +
+      '<div class="wchips">' + g.pool.map(function(t, j){ return '<button class="wchip" data-act="word" data-j="' + j + '"' + (g.used[j] ? " disabled" : "") + ">" + esc(t) + "</button>"; }).join("") + "</div>";
+  } else if (c.t === "tam"){
+    h = head("Son adım", su ? "Bütün sure" : "Bütün metin", "Hepsini baştan sona bakmadan 3 kez söyle. Takılırsan aşağıdan bakabilirsin.") +
+      '<details class="acc"><summary>' + star("") + '<span class="sp">Metni göster</span>' + IC.chev + '</summary><div class="acc-b"><div class="tcard">' + linesHTML(L, {numbered:it.kind === "s"}) + "</div></div></details>";
+  } else {
+    if (!isOk(W.id)) markOk(W.id);
+    W.nextId = nextItem();
+    h = '<div class="celebrate"><div class="star bigstar" aria-hidden="true"><span></span></div><h2 class="h1">Maşallah!</h2><p class="lead">' + esc(it.name) + " artık ezber listende. Yarın, 3 gün sonra ve 1 hafta sonra tekrar etmeni hatırlatacağım.</p></div>" +
+      (su ? '<div class="note sec">' + IC.info + "<div>Namaz rehberi artık bu sureyi de önerir. Önce sünnetlerde okuyarak pekiştir.</div></div>" : "");
+  }
+  var inner = $("#w-in", root);
+  inner.innerHTML = h;
+  if (!keepAnim) animIn2(inner);
+  drawFoot();
+  if (!keepAnim) $(".l-body", root).scrollTop = 0;
+}
+function drawFoot(){
+  var c = W.cards[W.k], f = $("#w-foot", W.el), h;
+  var back = '<button class="btn" data-act="prev">' + IC.back + "Geri</button>";
+  f.className = "l-foot-in";
+  if (c.t === "intro"){
+    f.className = "l-foot-in one";
+    h = S.ezp[W.id] ? '<div style="display:grid;grid-template-columns:1fr 1.5fr;gap:10px"><button class="btn" data-act="start">Baştan başla</button><button class="btn pri" data-act="resume">' + IC.play + "Kaldığın yerden</button></div>"
+      : '<button class="btn pri block" data-act="start">' + IC.play + "Başla</button>";
+  } else if (c.t === "oku" || c.t === "tam"){
+    h = back + '<button class="btn pri cnt-btn" data-act="count">' + (c.t === "oku" ? "Sesli okudum" : "Söyledim") + " · " + W.cnt + " / " + cardNeed() + "</button>";
+  } else if (c.t === "ipucu" || c.t === "gizli" || c.t === "zincir"){
+    h = W.shown ? '<button class="btn" data-act="again">' + IC.reset + 'Bir daha</button><button class="btn pri" data-act="next">' + IC.check + "Doğru söyledim</button>"
+      : back + '<button class="btn pri" data-act="show">Göster ve kontrol et</button>';
+  } else if (c.t === "oyun"){
+    h = back + '<button class="btn" data-act="skip">Atla' + IC.next + "</button>";
+  } else {
+    f.className = "l-foot-in one";
+    h = W.nextId ? '<button class="btn pri block" data-act="nextez">' + IC.next + "Sıradaki: " + esc(ITEM(W.nextId).name) + "</button>" : '<button class="btn pri block" data-act="finish">Bitir</button>';
+  }
+  f.innerHTML = h;
+}
+function newGame(ok){
+  var toks = gameTokens(ok), pool = toks.slice();
+  for (var t = 0; t < 8; t++){
+    for (var i = pool.length - 1; i > 0; i--){ var j = Math.floor(Math.random() * (i + 1)); var x = pool[i]; pool[i] = pool[j]; pool[j] = x; }
+    if (pool.join(" ") !== toks.join(" ")) break;
+  }
+  return {toks:toks, pool:pool, used:pool.map(function(){ return false; }), picked:[], done:false};
+}
+function pickWord(b){
+  var g = W.game, j = +b.dataset.j; if (!g || g.done || g.used[j]) return;
+  if (g.pool[j] === g.toks[g.picked.length]){
+    g.used[j] = true; g.picked.push(g.pool[j]); vib(8);
+    if (g.picked.length === g.toks.length){
+      g.done = true; vib([40, 40, 40]); drawW(true);
+      setTimeout(function(){ if (W && W.game === g){ W.k++; goW(1); } }, 900);
+      return;
+    }
+    drawW(true);
+  } else { b.classList.remove("bad"); void b.offsetWidth; b.classList.add("bad"); vib(60); }
+}
+function openReview(id){
+  var it = ITEM(id), R = {shown:false};
+  var el = openLayer(topBar("Tekrar: " + it.name, dueText(id), IC.close) + '<div class="l-body"><div class="l-in" id="rv-in"></div></div><div class="l-foot"><div class="l-foot-in" id="rv-foot"></div></div>',
+    {label:"Tekrar", onclose:function(){ render(); }});
+  function draw(){
+    $("#rv-in", el).innerHTML = '<div class="wk-step">Tekrar</div><p class="wk-help" style="margin-top:6px">' + (isSure(it) ? "Sureyi" : "Metni") + " baştan sona bakmadan söyle, sonra kontrol et.</p>" +
+      (R.shown ? '<div class="tcard">' + linesHTML(it.lines, {numbered:it.kind === "s"}) + "</div>"
+        : '<div class="hintbox"><div class="cue">İlk kelime</div><div class="hint">' + esc(it.lines[0].ok.split(/\s+/)[0]) + "…</div></div>");
+    $("#rv-foot", el).innerHTML = R.shown ? '<button class="btn" data-act="hard">Zorlandım</button><button class="btn pri" data-act="good">' + IC.check + "Hatırladım</button>"
+      : '<button class="btn" data-act="close">Sonra</button><button class="btn pri" data-act="show">Göster ve kontrol et</button>';
+  }
+  draw();
+  el.addEventListener("click", function(ev){
+    var b = ev.target.closest("button"); if (!b) return; var a = b.dataset.act;
+    if (a === "close") closeLayer();
+    else if (a === "show"){ R.shown = true; draw(); }
+    else if (a === "good"){ reviewed(id, true); closeLayer(); toast("Maşallah! Bir sonraki tekrar: " + dueText(id).replace("Tekrar: ", "") + "."); }
+    else if (a === "hard"){ reviewed(id, false); closeLayer(); openWorkshop(id); toast("Sorun değil, bir kez daha birlikte çalışalım."); }
+  });
+}
+
+/* ---------- Tesbih ---------- */
+var TS = {i:0, c:{subhanallah:0, elhamdulillah:0, allahuekber:0}};
+var TSTEPS = [
+  {t:"Farzdan sonra", sub:"Selam verince", items:[{d:"selamduasi"}], note:"Öğle, akşam ve yatsıda bundan sonra son sünnet kılınır; tesbihata sünnetten sonra devam edilir."},
+  {t:"Salavat", sub:"Peygamberimize salavat", items:[{d:"salavat"}]},
+  {t:"Sübhânallâhi ve'l-hamdü lillâh", sub:"Tesbih, hamd ve tekbir", items:[{d:"tesbihgiris"}]},
+  {t:"Âyetü'l-Kürsî", sub:"Eûzü-Besmele ile", items:[{d:"euzu"},{d:"besmele"},{s:"ayetelkursi"}]},
+  {t:"Sübhânallâh", sub:"33 defa", count:"subhanallah"},
+  {t:"Elhamdülillâh", sub:"33 defa", count:"elhamdulillah"},
+  {t:"Allâhü ekber", sub:"33 defa", count:"allahuekber"},
+  {t:"Lâ ilâhe illallâhü vahdehû", sub:"Bir defa", items:[{d:"tehlil"}]},
+  {t:"Dua", sub:"Eller göğüs hizasında", items:[{d:"duasonu"}], note:"Ellerini göğüs hizasında, avuç içlerin yukarı bakacak şekilde aç ve dilediğin gibi dua et. Duanın sonunda “Sübhâne rabbike…” âyetlerini okuyup ellerini yüzüne sürebilirsin."}
+];
+var ZK = ["subhanallah","elhamdulillah","allahuekber","tevhid","istigfar","salavat"];
+function diskHTML(id, n, target, phrase){
+  var R = 54, Cc = 2 * Math.PI * R, frac = target ? Math.min(n / target, 1) : (n % 33) / 33;
+  return '<button class="disk' + (target && n >= target ? " full" : "") + '" id="' + id + '" aria-label="' + esc(phrase) + ", " + n + (target ? " / " + target : "") + '. Saymak için dokun.">' +
+    '<svg viewBox="0 0 120 120" aria-hidden="true"><circle class="trk" cx="60" cy="60" r="' + R + '"/><circle class="prg" cx="60" cy="60" r="' + R + '" stroke-dasharray="' + Cc.toFixed(1) + '" stroke-dashoffset="' + (Cc * (1 - frac)).toFixed(1) + '"/></svg>' +
+    '<span class="in"><span class="cnt">' + n + '</span><span class="of">' + (target ? "/ " + target : "sınırsız") + "</span></span></button>";
+}
+function viewTesbih(){
+  var h = '<h1 class="h1">Tesbihat</h1><p class="lead">Namazdan sonra sırasıyla: sayaç 33\'e gelince titreşir ve bir sonrakine geçer.</p><div class="sec tsteps" id="ts">';
+  TSTEPS.forEach(function(s, i){
+    var cls = i === TS.i ? "cur" : (i < TS.i ? "past" : "");
+    h += '<div class="ts ' + cls + '"><button class="ts-h" data-ts="' + i + '" aria-expanded="' + (i === TS.i) + '">' + star(i + 1, i < TS.i ? "fill" : "") + "<b>" + esc(s.t) + "<span>" + esc(s.sub) + "</span></b>" + (s.count ? '<span class="chip v">' + TS.c[s.count] + " / 33</span>" : "") + "</button>";
+    if (i === TS.i){
+      h += '<div class="ts-b">';
+      if (s.count){
+        var d = DUA[s.count];
+        h += '<div class="tcard">' + linesHTML(d.lines) + "</div>" + diskHTML("ts-disk", TS.c[s.count], 33, d.name);
+      } else {
+        h += s.items.map(function(it){ return itemHTML(it, {}); }).join("");
+      }
+      if (s.note) h += '<p class="small" style="margin:0">' + esc(s.note) + "</p>";
+      h += '<div style="display:grid;grid-template-columns:1fr 2fr;gap:10px">' + '<button class="btn" data-tsgo="-1"' + (i === 0 ? " disabled" : "") + ">" + IC.back + "Geri</button>" +
+        (i < TSTEPS.length - 1 ? '<button class="btn pri" data-tsgo="1">Sonraki' + IC.next + "</button>" : '<button class="btn pri" data-tsgo="reset">' + IC.reset + "Baştan başla</button>") + "</div></div>";
+    }
+    h += "</div>";
+  });
+  h += "</div>";
+  var z = S.zikir;
+  h += '<div class="sec"><div class="sec-h"><span class="h2">Zikirmatik</span><button class="mini" data-zk="reset">' + IC.reset + 'Sıfırla</button></div><div class="card stack">' +
+    '<div class="toggles" role="group" aria-label="Zikir">' + ZK.map(function(k){ return '<button class="tg" data-zkp="' + k + '" aria-pressed="' + (z.phrase === k) + '">' + esc(DUA[k].name) + "</button>"; }).join("") + "</div>" +
+    '<div class="seg" role="group" aria-label="Hedef" style="align-self:flex-start">' + [33,99,100,0].map(function(t){ return '<button data-zkt="' + t + '" aria-pressed="' + (z.target === t) + '">' + (t || "∞") + "</button>"; }).join("") + "</div>" +
+    '<div class="zk-ph"><div class="ar" lang="ar" dir="rtl">' + esc(DUA[z.phrase].lines[0].ar) + '</div><div class="ok">' + esc(DUA[z.phrase].lines[0].ok) + '</div><div class="tr">' + esc(DUA[z.phrase].lines[0].tr) + "</div></div>" +
+    diskHTML("zk-disk", z.count, z.target, DUA[z.phrase].name) + "</div></div>";
+  return h;
+}
+function bindTesbih(){
+  var root = $("#view");
+  root.onclick = function(ev){
+    var b = ev.target.closest("button"); if (!b) return;
+    if (b.id === "ts-disk"){
+      var s = TSTEPS[TS.i], k = s.count; if (!k) return;
+      if (TS.c[k] >= 33) return;
+      TS.c[k]++; vib(10);
+      if (TS.c[k] >= 33){
+        vib([60, 50, 60]);
+        updateDisk(b, TS.c[k], 33);
+        setTimeout(function(){ if (TS.i < TSTEPS.length - 1 && TSTEPS[TS.i].count === k){ TS.i++; render(); var c = $(".ts.cur"); if (c) c.scrollIntoView({block:"start", behavior:"smooth"}); } }, 650);
+      } else updateDisk(b, TS.c[k], 33);
+      var chip = b.closest(".ts").querySelector(".chip"); if (chip) chip.textContent = TS.c[k] + " / 33";
+      return;
+    }
+    if (b.id === "zk-disk"){
+      var z = S.zikir;
+      if (z.target && z.count >= z.target){ z.count = 0; }
+      z.count++; vib(10);
+      if (z.target && z.count === z.target) vib([60, 50, 60]);
+      save(); updateDisk(b, z.count, z.target); return;
+    }
+    if (b.dataset.ts != null){ TS.i = +b.dataset.ts; render(); return; }
+    if (b.dataset.tsgo){
+      var g = b.dataset.tsgo;
+      if (g === "reset"){ TS.i = 0; TS.c = {subhanallah:0, elhamdulillah:0, allahuekber:0}; }
+      else TS.i = Math.max(0, Math.min(TSTEPS.length - 1, TS.i + (+g)));
+      render(); var c2 = $(".ts.cur"); if (c2) c2.scrollIntoView({block:"start", behavior:"smooth"}); return;
+    }
+    if (b.dataset.zkp){ S.zikir.phrase = b.dataset.zkp; S.zikir.count = 0; save(); render(); return; }
+    if (b.dataset.zkt != null){ S.zikir.target = +b.dataset.zkt; save(); render(); return; }
+    if (b.dataset.zk === "reset"){ S.zikir.count = 0; save(); render(); return; }
+    var d = b.closest("[data-dua]"); if (d) openReader("d", d.dataset.dua);
+    var s2 = b.closest("[data-sure]"); if (s2) openReader("s", s2.dataset.sure);
+  };
+}
+function updateDisk(b, n, target){
+  var R = 54, Cc = 2 * Math.PI * R, frac = target ? Math.min(n / target, 1) : (n % 33) / 33;
+  $(".cnt", b).textContent = n;
+  $(".prg", b).setAttribute("stroke-dashoffset", (Cc * (1 - frac)).toFixed(1));
+  b.classList.toggle("full", !!target && n >= target);
+  b.classList.remove("pulse"); void b.offsetWidth; b.classList.add("pulse");
+  var lbl = b.getAttribute("aria-label").replace(/, \d+( \/ \d+)?\./, ", " + n + (target ? " / " + target : "") + ".");
+  b.setAttribute("aria-label", lbl);
+}
+
+/* ---------- Bilgi ---------- */
+function acc(n, title, body, open){
+  return '<details class="acc"' + (open ? " open" : "") + "><summary>" + star(n) + '<span class="sp">' + title + "</span>" + IC.chev + '</summary><div class="acc-b">' + body + "</div></details>";
+}
+function viewBilgi(){
+  var tbl = '<div class="tblwrap"><table class="rt"><thead><tr><th scope="col"></th><th scope="col">İlk sünnet</th><th scope="col">Farz</th><th scope="col">Son sünnet</th></tr></thead><tbody>' +
+    "<tr><th scope=\"row\">Sabah</th><td>2</td><td class=\"f\">2</td><td>–</td></tr>" +
+    "<tr><th scope=\"row\">Öğle</th><td>4</td><td class=\"f\">4</td><td>2</td></tr>" +
+    "<tr><th scope=\"row\">İkindi</th><td>4*</td><td class=\"f\">4</td><td>–</td></tr>" +
+    "<tr><th scope=\"row\">Akşam</th><td>–</td><td class=\"f\">3</td><td>2</td></tr>" +
+    "<tr><th scope=\"row\">Yatsı</th><td>4*</td><td class=\"f\">4</td><td>2 + 3 vitir</td></tr>" +
+    "<tr><th scope=\"row\">Cuma</th><td>4</td><td class=\"f\">2</td><td>4</td></tr></tbody></table></div>" +
+    '<p class="small" style="margin-top:10px">* Gayr-i müekked sünnet: ilk oturuşta Ettehiyyâtü\'den sonra Salli ve Bârik de okunur, 3. rekâta Sübhâneke ile başlanır. Vitir namazı vaciptir; 3. rekâtında rükûdan önce kunut duaları okunur.</p>';
+  var prova = "<p>Bu uygulama namazı öğrenmek, provasını yapmak ve sureleri ezberlemek içindir.</p><p>Hanefî mezhebinde namaz kılarken Mushaf'a, kâğıda ya da ekrana bakarak okumak İmam Ebû Hanîfe'ye göre namazı bozar; İmam Ebû Yûsuf ve İmam Muhammed'e göre bozmaz ama mekruhtur. Bu yüzden sure ve duaları ezberleyip öyle kıl.</p><p>Ezberin oturana kadar cemaatle kılmak kolaylık sağlar: cemaatle kılınan namazda imamın okuması cemaatin yerine geçer.</p>";
+  var abdest = "<ol><li>Niyet et, “Eûzü-Besmele” çek.</li><li>Ellerini bileklerle birlikte üç kez yıka, parmak aralarını da ovala.</li><li>Sağ elinle ağzına üç kez su alıp çalkala.</li><li>Sağ elinle burnuna üç kez su çek, sol elinle temizle.</li><li>Yüzünü üç kez yıka: saç bitiminden çene altına, iki kulak yumuşağına kadar. <em>Farz</em></li><li>Önce sağ, sonra sol kolunu dirseklerle birlikte üç kez yıka. <em>Farz</em></li><li>Islak elinle başının en az dörtte birini meshet. <em>Farz</em></li><li>Islak parmaklarınla kulaklarını, ellerinin dış yüzüyle boynunu meshet.</li><li>Önce sağ, sonra sol ayağını topuklarla birlikte üç kez yıka, parmak aralarını da temizle. <em>Farz</em></li></ol><p class=\"small\">Hanefî mezhebinde abdestin farzı dörttür: yüzü yıkamak, kolları dirseklerle yıkamak, başın dörtte birini meshetmek, ayakları topuklarla yıkamak. Diğerleri sünnet ve âdaptır.</p>";
+  var farzlar = "<p><b>Namazın dışındaki farzlar (şartlar)</b></p><ol><li>Hadesten tahâret: abdestli olmak (gerekiyorsa gusül).</li><li>Necâsetten tahâret: beden, elbise ve namaz yerinin temiz olması.</li><li>Setr-i avret: örtülmesi gereken yerlerin örtülmesi.</li><li>İstikbâl-i kıble: kıbleye yönelmek.</li><li>Vakit: namazı vaktinde kılmak.</li><li>Niyet.</li></ol><p><b>Namazın içindeki farzlar (rükünler)</b></p><ol><li>İftitah tekbiri</li><li>Kıyam (ayakta durmak)</li><li>Kıraat (Kur'an okumak)</li><li>Rükû</li><li>Secde</li><li>Ka'de-i âhire (son oturuş)</li></ol>";
+  var cem = "<p>İmama uyan kişi Fâtiha ve zamm-ı sureyi okumaz: imam sesli okurken susup dinler, içinden okurken bekler. İmam Fâtiha'yı bitirince içinden “Âmîn” denir.</p><p>Sübhâneke, rükû ve secde tesbihleri, Ettehiyyâtü, Salli-Bârik ve Rabbenâ duaları okunur. Rükûdan kalkarken imam “Semiallâhü limen hamideh”, cemaat “Rabbenâ leke'l-hamd” der.</p><p>Niyete “Uydum hazır olan imama” eklenir. Rehberde farz namazlar için “Cemaatle kılıyorum” seçeneğini aç; adımlar buna göre değişir.</p>";
+  var zamm = "<ul><li>Farzların ilk iki rekâtında, sünnetlerin ve vitirin bütün rekâtlarında Fâtiha'dan sonra en az üç kısa âyet ya da bir uzun âyet okunur.</li><li>Sureleri Mushaf sırasıyla okumak sünnettir. Önceki rekâttakinden daha önce gelen bir sureyi okumak tenzîhen mekruhtur, namaz bozulmaz.</li><li>İki rekât arasında yalnız bir kısa sure atlamak tenzîhen mekruh sayılır; bitişik sureyi ya da en az iki sure ilerisini seç.</li><li>Farzda aynı sureyi iki rekâtta okumak, unutma gibi bir özür yoksa mekruhtur; sünnette mekruh değildir.</li><li>Dört rekâtlı sünnette her iki rekât ayrı sayılır; 3. ve 4. rekâtta ilk ikidekileri okumak zarar vermez.</li></ul><p class=\"small\">Rehberdeki seçim ekranı bu kuralları kendiliğinden kontrol eder.</p>";
+  var kaynak = "<ul><li>Kılınış, dualar ve hükümler: Diyanet İşleri Başkanlığı, İslam İlmihali (Hanefî mezhebi) esas alındı.</li><li>" + esc(D.source) + "</li><li>Okunuşlar ve anlamlar bu uygulama için yazıldı. Anlamlar kısa açıklamadır, meal yerine geçmez.</li><li>Tereddüt ettiğin bir konuyu camideki imama ya da Diyanet'e sorabilirsin.</li></ul>";
+  return '<h1 class="h1">Bilgi</h1><p class="lead">Kısa ve öz: rekâtlar, abdest, farzlar ve yanılınca yapılacaklar.</p><div class="sec">' +
+    acc(1, "Rekât tablosu", tbl, true) + acc(2, "Rehberi nasıl kullanmalı?", prova) + acc(3, "Abdest nasıl alınır?", abdest) +
+    acc(4, "Namazın farzları", farzlar) + acc(5, "Yanılırsan: sehiv secdesi", sehivHTML()) + acc(6, "Cemaatle kılarken", cem) +
+    acc(7, "Zamm-ı sure seçerken", zamm) + acc(8, "Kaynaklar", kaynak) + "</div>";
+}
+
+/* ---------- Ayarlar ---------- */
+function openSettings(){
+  var el = openLayer('<div id="set-in"></div>', {sheet:true, label:"Ayarlar"});
+  var confirmReset = false;
+  function draw(){
+    var zo = ZAMM.map(function(z){ return '<option value="' + z.id + '"' + (z.id === S.zammStart ? " selected" : "") + ">" + esc(z.name) + "</option>"; }).join("");
+    $("#set-in", el).innerHTML = '<h2 class="h2" style="margin-bottom:12px">Ayarlar</h2>' +
+      '<div class="setgrp"><h3>Yazı boyutu</h3><div class="field"><label>Arapça</label><div class="fs"><button data-fs="ar:-1" aria-label="Arapça yazıyı küçült">A−</button><output>' + ["Küçük","Orta","Büyük"][S.ar] + '</output><button data-fs="ar:1" aria-label="Arapça yazıyı büyüt">A+</button></div></div>' +
+      '<div class="field"><label>Okunuş ve anlam</label><div class="fs"><button data-fs="lat:-1" aria-label="Latin yazıyı küçült">A−</button><output>' + ["Küçük","Orta","Büyük"][S.lat] + '</output><button data-fs="lat:1" aria-label="Latin yazıyı büyüt">A+</button></div></div></div>' +
+      '<div class="setgrp"><h3>Gösterilecekler</h3><div class="field"><div class="toggles">' +
+        '<button class="tg" data-show="ar" aria-pressed="' + S.show.ar + '">Arapça</button><button class="tg" data-show="ok" aria-pressed="' + S.show.ok + '">Okunuş</button><button class="tg" data-show="tr" aria-pressed="' + S.show.tr + '">Anlam</button></div></div></div>' +
+      '<div class="setgrp"><h3>Hareket tarifleri</h3><div class="field"><label>Rehberdeki duruş anlatımı<span>Ellerin bağlanışı, rükû, secde ve oturuş</span></label><div class="seg"><button data-g="erkek" aria-pressed="' + (S.gender === "erkek") + '">Erkek</button><button data-g="kadin" aria-pressed="' + (S.gender === "kadin") + '">Kadın</button></div></div></div>' +
+      '<div class="setgrp"><h3>Zamm-ı sure</h3><div class="field"><label for="set-zs">Rehberde ilk sure</label><select class="sel" id="set-zs">' + zo + "</select></div></div>" +
+      '<div class="setgrp"><h3>Ezber</h3><div class="field"><label>Ezber işaretleri<span>' + memoCount() + " metin işaretli</span></label><button class=\"btn\" data-act=\"resetmemo\" style=\"min-height:42px\">" + (confirmReset ? "Emin misin? Sıfırla" : "Sıfırla") + "</button></div></div>" +
+      '<p class="small" style="margin:6px 2px 0">Ayarların ve ezber işaretlerin yalnız bu cihazda, bu tarayıcıda saklanır.</p>';
+  }
+  draw();
+  el.addEventListener("click", function(ev){
+    var b = ev.target.closest("button"); if (!b) return;
+    if (b.dataset.fs){ var p = b.dataset.fs.split(":"); S[p[0]] = Math.max(0, Math.min(2, S[p[0]] + (+p[1]))); save(); applyPrefs(); draw(); }
+    else if (b.dataset.show){ var k = b.dataset.show; S.show[k] = !S.show[k]; if (!S.show.ar && !S.show.ok && !S.show.tr) S.show.ok = true; save(); applyPrefs(); draw(); }
+    else if (b.dataset.g){ S.gender = b.dataset.g; save(); draw(); }
+    else if (b.dataset.act === "resetmemo"){ if (confirmReset){ S.ezber = {}; S.ezp = {}; save(); confirmReset = false; render(); toast("Ezber işaretleri sıfırlandı."); } else confirmReset = true; draw(); }
+  });
+  el.addEventListener("change", function(ev){ if (ev.target.id === "set-zs"){ S.zammStart = ev.target.value; save(); render(); } });
+}
+$("#btn-settings").addEventListener("click", openSettings);
+
+/* ---------- global clicks in main view ---------- */
+$("#view").addEventListener("click", function(ev){
+  if (tab === "tesbih") return;
+  var t = ev.target;
+  var v = t.closest("[data-vakit]"); if (v) return openVakit(v.dataset.vakit);
+  var ez = t.closest("[data-ez]"); if (ez) return openWorkshop(ez.dataset.ez);
+  var rv = t.closest("[data-rev]"); if (rv) return openReview(rv.dataset.rev);
+  var g = t.closest("[data-go]"); if (g) return go(g.dataset.go);
+  var d = t.closest("[data-dua]"); if (d) return openReader("d", d.dataset.dua);
+  var s = t.closest("[data-sure]"); if (s) return openReader("s", s.dataset.sure);
+});
+$("#view").addEventListener("change", function(ev){ if (ev.target.id === "zs"){ S.zammStart = ev.target.value; save(); toast("Rehber artık " + SUR[S.zammStart].name + " ile başlayacak."); } });
+
+/* ---------- boot ---------- */
+function start(data){
+  applyPrefs();
+  var h0 = (location.hash || "").replace("#", "") || (data && data.tab) || "";
+  if (h0 === "sureler") h0 = "ezber";
+  tab = TABS.some(function(x){ return x[0] === h0; }) ? h0 : "namaz";
+  renderTabs(); render();
+  try { if (window.claude && window.claude.hot && window.claude.hot.snapshot) window.claude.hot.snapshot(function(){ return {tab:tab}; }); } catch (e) {}
+}
+var hot = window.claude && window.claude.hot;
+if (hot && hot.ready) hot.ready(start); else start((hot && hot.data) || {});
+})();
+</script>
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", function(){ navigator.serviceWorker.register("sw.js").catch(function(){}); });
+}
+</script>
+</body>
+</html>
